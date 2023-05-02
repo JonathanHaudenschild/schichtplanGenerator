@@ -23,7 +23,7 @@ exports.createParticipant = async (req, res) => {
   }
 };
 
-exports.getParticipantById   = async (req, res) => {
+exports.getParticipantById = async (req, res) => {
   try {
     const { groupId, participantId } = req.params;
     const participant = await Participant.findOne({ _id: participantId, group: groupId });

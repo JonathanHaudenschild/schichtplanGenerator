@@ -20,38 +20,48 @@ export class AuthManagementService {
 
     }
 
-
-    signUp(username: string, email: string, password: string): Observable<HttpResponse> {
+    async getData(request: Promise<HttpResponse>) {
+        const response = await request;
+        if (response.status !== 200) {
+          throw response;
+        }
+        return response;
+      }
+    
+    
+    
+      signUp(username: string, email: string, password: string): Observable<HttpResponse> {
         const options = {
-            url: this.userURL + '/register',
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json',
-                'Cache-Control': 'no-cache',
-            },
-            data: {
-                username,
-                email,
-                password
-            },
+          url: this.userURL + '/register',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            'Cache-Control': 'no-cache',
+          },
+          data: {
+            username,
+            email,
+            password
+          },
         };
-        return from(getData(Http.post(options)))
-    }
-
-
-    signIn(email: string, password: string): Observable<HttpResponse> {
+        return from(this.getData(Http.post(options)))
+      }
+    
+    
+      signIn(email: string, password: string): Observable<HttpResponse> {
         const options = {
-            url: this.userURL + '/login',
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json',
-                'Cache-Control': 'no-cache',
-            },
-            data: {
-                email,
-                password,
-            },
+          url: this.userURL + '/login',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            'Cache-Control': 'no-cache',
+          },
+          data: {
+            email,
+            password,
+          },
         };
-        return from(getData(Http.post(options))) 
-    }
+        return from(this.getData(Http.post(options)))
+      }
+    
 }

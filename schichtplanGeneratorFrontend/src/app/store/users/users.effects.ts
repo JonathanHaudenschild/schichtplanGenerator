@@ -4,7 +4,7 @@ import { Injectable } from '@angular/core';
 import { UserState } from './users.model';
 import { Store } from '@ngrx/store';
 import { AuthManagementService } from 'src/app/services/auth-management.service';
-import { exhaustMap, of, switchMap } from 'rxjs';
+import { catchError, exhaustMap, map, of, switchMap } from 'rxjs';
 @Injectable()
 export class UserEffects {
     constructor(
@@ -13,30 +13,29 @@ export class UserEffects {
         private authService: AuthManagementService,
     ) { }
 
-    // signInAPIRequest$ = createEffect(() =>
-    //     this.actions$.pipe(
-    //         ofType(userActions.signIn),
-    //         switchMap(({ signInUser }) => {
-    //             const { email, password } = signInUser;
-    //             return this.authService.signIn(email, password).pipe(
-    //                 map(({ data }) => {
-    //                     this.authService.setToken(data.token);
-    //                     return userActions.signInSuccess({ user: data.user }) as any;
-    //                 }),
-    //                 catchError((error) =>
-    //                     of(userActions.signInFail({
-    //                         errorAlert: {
-    //                             title: 'user.login.error.title',
-    //                             message: 'user.login.error.message',
-    //                             showAlert: true,
-    //                         },
-    //                     }) as any
-    //                     )
-    //                 )
-    //             );
-    //         })
-    //     )
-    // );
+    signInAPIRequest$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(userActions.signIn),
+            exhaustMap(({ signInUser }) => {
+                const { email, password } = signInUser;
+                return this.authService.signIn(email, password).pipe(
+                    map(({ data }) => {
+                        if (data.token) {
+                            this.authService.setToken(data.token);
+                            return userActions.signInSuccess({
+                                user: { profileUser: data.userProfile, token: data.token },
+                                successAlert: { title: 'user.login.title', message: 'user.login.message', showAlert: false }
+                            });
+                        } else {
+                            return userActions.signInFail({ errorAlert: { title: 'user.login.title', message: 'user.login.message', showAlert: true } })
+                        }
+                    }),
+                    catchError(() => {
+                        return of(userActions.signInFail({ errorAlert: { title: 'user.login.title', message: 'user.login.message', showAlert: true } }))
+                    }))
+            })
+        )
+    )
 
     signUpAPIRequest$ = createEffect(() =>
         this.actions$.pipe(

@@ -3,6 +3,7 @@ import { filter, map, Observable } from "rxjs";
 import { concatLatestFrom } from "@ngrx/effects";
 import { UserState } from "./users/users.model";
 import { userReducer } from "./users/users.reducer";
+import { UserEffects } from "./users/users.effects";
 
 export const COURSES_KEY = '__courses';
 export const CONFIG_KEY = '__config';
@@ -12,7 +13,7 @@ export interface AppState {
     user: UserState,
 }
 
-export const effects: any[] = []
+export const effects: any[] = [UserEffects]
 
 export const reducers: ActionReducerMap<AppState> = {
     user: userReducer,
