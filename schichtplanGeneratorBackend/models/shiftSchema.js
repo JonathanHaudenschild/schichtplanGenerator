@@ -26,7 +26,7 @@ const shiftSchema = new Schema({
      * @type {number}
      */
     day: {
-        type: Number,
+        type: Date,
         required: true,
     },
     /**
@@ -70,8 +70,8 @@ const shiftSchema = new Schema({
     config: {
         type: Object,
         default: {
+            isLocked: false,
             isNightShift: false,
-            isDayShift: false,
             isEarlyShift: false,
             isLateShift: false,
             minParticipants: 4,

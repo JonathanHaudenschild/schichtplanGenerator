@@ -66,6 +66,11 @@ const groupSchema = new Schema({
     config: {
         type: Object,
         default: {
+            isEditable: true,
+            isPublic: false,
+            isPublished: false,
+            isGenerated: false,
+            isArchived: false,
             numberOfShiftsPerDay: 1,
             minNumberOfShiftsBetween: 2,
             numberOfOffDays: 1,

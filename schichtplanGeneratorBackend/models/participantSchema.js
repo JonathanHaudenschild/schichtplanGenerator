@@ -74,7 +74,6 @@ const participantSchema = new Schema({
         type: Object,
         default: {
             isNightShift: false,
-            isDayShift: false,
             isEarlyShift: false,
             isLateShift: false,
         },
