@@ -1,0 +1,7 @@
+{
+  "name": "schichtplanGeneratorFrontend",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
