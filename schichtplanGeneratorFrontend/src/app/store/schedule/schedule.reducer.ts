@@ -1,6 +1,6 @@
 import { createEntityAdapter, EntityAdapter } from "@ngrx/entity";
 import { createReducer, on } from "@ngrx/store";
-import { GeneratedShiftsState, Participant, ParticipantsState, ScheduleState as GeneratedShiftsState, Shift, ShiftsState, ScheduleState } from "./schedule.model";
+import { GeneratedShiftsState, Participant, ParticipantsState, Shift, ShiftsState, ScheduleState } from "./schedule.model";
 
 export const participantsAdapter: EntityAdapter<Participant> = createEntityAdapter<Participant>({
     selectId: (Participant: Participant) => Participant._id,
