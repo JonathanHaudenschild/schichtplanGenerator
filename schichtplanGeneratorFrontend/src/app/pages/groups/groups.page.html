@@ -1,0 +1,30 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Groups</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <app-groups-list [groups]="groups$ | async" (groupSelected)="onGroupSelected($event)"></app-groups-list>
+  <ion-button (click)="openGroupAddModal(true)">Add Group</ion-button>
+
+</ion-content>
+
+<ion-modal class="modal-fullscreen" [isOpen]="isOpenGroupModal" (didDismiss)="openGroupAddModal(false)">
+  <ng-template>
+    <ion-header class="modal-header ion-no-border">
+      <ion-toolbar>
+        <ion-title slot="start">
+        </ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="openGroupAddModal(false)">
+            <ion-icon slot="icon-only" name="close"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content class="modal-content light-tint-background">
+      <app-group-add (groupAdded)="onGroupAdded($event)"></app-group-add>
+    </ion-content>
+  </ng-template>
+</ion-modal>

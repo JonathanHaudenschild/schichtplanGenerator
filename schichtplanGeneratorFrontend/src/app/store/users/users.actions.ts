@@ -1,5 +1,19 @@
 import { createAction, props } from "@ngrx/store";
-import { ErrorAlert, SignInUser, SignUpUser, SuccessAlert, User } from "./users.model";
+import { ErrorAlert, SignInUser, SignUpUser, SuccessAlert, User, UserState } from "./users.model";
+
+export const initUser = createAction(
+    '[User] Init User',
+);
+
+export const initUserSuccess = createAction(
+    '[User] Init User Success',
+    props<{ initState: UserState, successAlert?: SuccessAlert }>()
+);
+
+export const initUserFail = createAction(
+    '[User] Init User Fail',
+    props<{ errorAlert: ErrorAlert }>()
+);
 export const signIn = createAction(
     '[User] Sign In',
     props<{ signInUser: SignInUser }>()

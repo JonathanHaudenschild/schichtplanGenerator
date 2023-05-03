@@ -3,7 +3,6 @@ const session = require('express-session');
 const cors = require('cors');
 const createError = require('http-errors');
 const app = express();
-const config = require("./config/authConfig.js");
 const userRouter = require('./routes/userRoutes.js');
 const groupRoutes = require('./routes/groupRoutes');
 const participantRoutes = require('./routes/participantRoutes');
@@ -13,7 +12,7 @@ const mongoose = require('mongoose');
 const participantAuthRoutes = require('./routes/participantAuthRoutes');    
 // Change to hostname after following schema: username:pw@host:port/dbname
 //mongoose.connect('mongodb://dynamicteachingtools:wyhcR.7fDfPp@localhost:27017/dynamicteachingtools', { useNewUrlParser: true, useUnifiedTopology: true });
-mongoose.connect('mongodb://localhost:27017/shiftplan', { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect('mongodb://0.0.0.0:27017/shiftplan', { useNewUrlParser: true, useUnifiedTopology: true });
 //mongoose.connect('mongodb://0.0.0.0:27017/biodidacticsDB', { useNewUrlParser: true, useUnifiedTopology: true });
 
 

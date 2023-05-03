@@ -1,0 +1,47 @@
+<form [formGroup]="groupForm" (ngSubmit)="onSubmit()">
+  <!-- Name -->
+  <ion-item>
+    <ion-label>Name</ion-label>
+    <ion-input formControlName="name" type="text" required></ion-input>
+  </ion-item>
+
+  <!-- Start Date -->
+  <ion-item>
+    <ion-label>Start Date</ion-label>
+    <ion-datetime-button datetime="startDate"></ion-datetime-button>
+    <ion-modal [keepContentsMounted]="true">
+      <ng-template>
+        <ion-datetime id="startDate" formControlName="startDate"></ion-datetime>
+      </ng-template>
+    </ion-modal>
+  </ion-item>
+
+  <!-- End Date -->
+  <ion-item>
+    <ion-label>End Date</ion-label>
+    <ion-datetime-button datetime="endDate"></ion-datetime-button>
+    <ion-modal [keepContentsMounted]="true">
+      <ng-template>
+        <ion-datetime id="endDate" formControlName="endDate"></ion-datetime>
+      </ng-template>
+    </ion-modal>
+  </ion-item>
+
+  <!-- Config -->
+  <ion-item-group>
+    <ion-item-divider>
+      <ion-label>Config</ion-label>
+    </ion-item-divider>
+
+    <ion-item>
+      <ion-label>Is Editable</ion-label>
+      <ion-toggle formControlName="isEditable"></ion-toggle>
+    </ion-item>
+
+    <!-- Add other config properties -->
+
+  </ion-item-group>
+
+  <!-- Submit button -->
+  <ion-button type="submit" [disabled]="groupForm.invalid">Add Group</ion-button>
+</form>

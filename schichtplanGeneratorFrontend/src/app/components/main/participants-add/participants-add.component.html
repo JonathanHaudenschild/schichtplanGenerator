@@ -1,0 +1,110 @@
+<form [formGroup]="participantForm" (ngSubmit)="onSubmit()">
+  <!-- Participant Token -->
+  <ion-item>
+    <ion-label>Participant Token</ion-label>
+    <ion-input formControlName="participantToken" type="text" required></ion-input>
+  </ion-item>
+
+  <!-- Name -->
+  <ion-item>
+    <ion-label>Name</ion-label>
+    <ion-input formControlName="name" type="text" required></ion-input>
+  </ion-item>
+
+  <!-- Color -->
+  <ion-item>
+    <ion-label>Color</ion-label>
+    <ion-input formControlName="color" type="color"></ion-input>
+  </ion-item>
+
+  <!-- Off Days -->
+  <ion-item>
+    <ion-label>Off Days</ion-label>
+    <ion-datetime-button datetime="offDays"></ion-datetime-button>
+    <ion-modal [keepContentsMounted]="true">
+      <ng-template>
+        <ion-datetime id="offDays" formControlName="offDays" presentation="date"></ion-datetime>
+      </ng-template>
+    </ion-modal>
+  </ion-item>
+
+  <!-- Friends -->
+  <ion-item>
+    <ion-label>Friends</ion-label>
+    <ion-select formControlName="friends" multiple="true">
+      <!-- <ion-select-option *ngFor="let friend of availableParticipants" [value]="friend">
+        {{ friend.name }}
+      </ion-select-option> -->
+    </ion-select>
+  </ion-item>
+
+  <!-- Enemies -->
+  <ion-item>
+    <ion-label>Enemies</ion-label>
+    <ion-select formControlName="enemies" multiple="true">
+      <!-- <ion-select-option *ngFor="let enemy of availableParticipants" [value]="enemy">
+        {{ enemy.name }}
+      </ion-select-option> -->
+    </ion-select>
+  </ion-item>
+
+  <!-- Shift Preferences -->
+  <!-- ... -->
+
+  <!-- Experience -->
+  <ion-item>
+    <ion-label>Experience</ion-label>
+    <ion-input formControlName="experience" type="number"></ion-input>
+  </ion-item>
+
+  <!-- Arrival Time -->
+  <ion-item>
+    <ion-label>Arrival Time</ion-label>
+    <ion-datetime-button datetime="arrivalTime"></ion-datetime-button>
+    <ion-modal [keepContentsMounted]="true">
+      <ng-template>
+        <ion-datetime id="arrivalTime" formControlName="arrivalTime"></ion-datetime>
+      </ng-template>
+    </ion-modal>
+  </ion-item>
+
+  <!-- Departure Time -->
+  <ion-item>
+    <ion-label>Departure Time</ion-label>
+    <ion-datetime-button datetime="departureTime"></ion-datetime-button>
+    <ion-modal [keepContentsMounted]="true">
+      <ng-template>
+        <ion-datetime id="departureTime" formControlName="departureTime"></ion-datetime>
+      </ng-template>
+    </ion-modal>
+  </ion-item>
+  <!-- Absences -->
+  <div formArrayName="absences">
+    <ion-item *ngFor="let absence of absences.controls; let i = index" [formGroupName]="i">
+      <ion-label>Absence {{ i + 1 }}</ion-label>
+      <ion-datetime-button datetime="absenceStart"></ion-datetime-button>
+      <ion-modal [keepContentsMounted]="true">
+        <ng-template>
+          <ion-datetime id="absenceStart" formControlName="startDate"></ion-datetime>
+        </ng-template>
+      </ion-modal>
+      <ion-datetime-button datetime="absenceEnd"></ion-datetime-button>
+      <ion-modal [keepContentsMounted]="true">
+        <ng-template>
+          <ion-datetime id="absenceEnd" formControlName="endDate"></ion-datetime>
+        </ng-template>
+      </ion-modal>
+    </ion-item>
+  </div>
+  <ion-button (click)="addAbsence()">Add Absence</ion-button>
+
+  <!-- Role -->
+  <ion-item>
+    <ion-label>Is Supervisor</ion-label>
+    <ion-toggle formControlName="isSupervisor"></ion-toggle>
+  </ion-item>
+
+  <!-- Submit button -->
+  <ion-button type="submit" [disabled]="participantForm.invalid">Submit</ion-button>
+
+</form>

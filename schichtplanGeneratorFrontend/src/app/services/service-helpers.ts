@@ -4,7 +4,8 @@ import { Observable } from "rxjs";
 
 export const getData = async (request: Promise<HttpResponse>): Promise<HttpResponse> => {
     const response = await request;
-    if (response.status !== 200) {
+    console.log(response)
+    if (response.status !== 200 && response.status !== 201) {
         throw response;
     }
     return response;

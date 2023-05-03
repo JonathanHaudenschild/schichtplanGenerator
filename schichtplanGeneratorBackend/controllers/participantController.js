@@ -15,10 +15,12 @@ exports.createParticipant = async (req, res) => {
   try {
     const { groupId } = req.params;
     const newParticipant = new Participant({ ...req.body, group: groupId });
+    console.log(newParticipant, req, req.params)
     const participant = await newParticipant.save();
-
+    console.log(participant)
     res.status(201).json(participant);
   } catch (error) {
+    console.log(error)
     res.status(500).json({ message: 'An error occurred while creating the participant.' });
   }
 };

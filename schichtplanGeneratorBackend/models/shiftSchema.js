@@ -71,6 +71,7 @@ const shiftSchema = new Schema({
         type: Object,
         default: {
             isLocked: false,
+            disableSwap: false,
             isNightShift: false,
             isEarlyShift: false,
             isLateShift: false,

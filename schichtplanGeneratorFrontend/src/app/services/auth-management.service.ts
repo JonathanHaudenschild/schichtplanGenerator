@@ -6,62 +6,58 @@ import { environment } from 'src/environments/environment';
 import { getData } from './service-helpers';
 
 @Injectable({
-    providedIn: 'root'
+  providedIn: 'root'
 })
 export class AuthManagementService {
-    public token = '';
+  public token = '';
 
-    private userURL = environment.api_url + '/users';
-    public setToken(token: string) {
-        this.token = token;
-    }
+  private userURL = environment.api_url + '/users';
+  public setToken(token: string) {
+    this.token = token;
+  }
 
-    constructor() {
+  public getToken() {
+    console.log(this.token)
+    return this.token;
+  }
 
-    }
+  constructor() {
 
-    async getData(request: Promise<HttpResponse>) {
-        const response = await request;
-        if (response.status !== 200) {
-          throw response;
-        }
-        return response;
-      }
-    
-    
-    
-      signUp(username: string, email: string, password: string): Observable<HttpResponse> {
-        const options = {
-          url: this.userURL + '/register',
-          headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-            'Cache-Control': 'no-cache',
-          },
-          data: {
-            username,
-            email,
-            password
-          },
-        };
-        return from(this.getData(Http.post(options)))
-      }
-    
-    
-      signIn(email: string, password: string): Observable<HttpResponse> {
-        const options = {
-          url: this.userURL + '/login',
-          headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-            'Cache-Control': 'no-cache',
-          },
-          data: {
-            email,
-            password,
-          },
-        };
-        return from(this.getData(Http.post(options)))
-      }
-    
+  }
+
+
+  signUp(username: string, email: string, password: string): Observable<HttpResponse> {
+    const options = {
+      url: this.userURL + '/register',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        'Cache-Control': 'no-cache',
+      },
+      data: {
+        username,
+        email,
+        password
+      },
+    };
+    return from(getData(Http.post(options)))
+  }
+
+
+  signIn(email: string, password: string): Observable<HttpResponse> {
+    const options = {
+      url: this.userURL + '/login',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        'Cache-Control': 'no-cache',
+      },
+      data: {
+        email,
+        password,
+      },
+    };
+    return from(getData(Http.post(options)))
+  }
+
 }

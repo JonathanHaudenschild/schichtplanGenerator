@@ -3,7 +3,7 @@ const Participant = require('../models/participantSchema');
 const Shift = require('../models/shiftSchema');
 const { getShifts } = require('./shiftController');
 
-exports.getAllGroups = async (req, res) => {
+exports.getGroups = async (req, res) => {
   try {
     const groups = await Group.find();
     res.status(200).json(groups);
@@ -200,13 +200,13 @@ const calculateCost = (group) => {
       const day = shift.day;
 
       if (!checkArrivalDepartureAbsences(participant, currentShift)) {
-        cost += 1000; // High priority
+        cost += 5000; // High priority
       }
       if (!checkOffShiftsBetween(participant, currentShift, group.config.minNumberOfShiftsBetween)) {
-        cost += 800;
+        cost += 2000;
       }
       if (!checkEnemies(participant, currentShift)) {
-        cost += 700;
+        cost += 1000;
       }
       if (!checkOffDays(participant, currentShift, group.config.numberOfOffDays)) {
         cost += 600;

@@ -3,6 +3,10 @@ import { User } from "../users/users.model";
 
 export interface ScheduleState {
     status: ScheduleStatus,
+    groups: GroupsState,
+    shifts: ShiftsState,
+    participants: ParticipantsState,
+    generatedShifts: GeneratedShiftsState,
 }
 export interface ScheduleStatus {
     isLoading: boolean;
@@ -20,6 +24,7 @@ export interface Shift {
     endDate: Date,
     config: {
         isLocked: boolean,
+        disableSwap: boolean,
         isNightShift: boolean,
         isLateShift: boolean,
         isEarlyShift: boolean,
@@ -44,6 +49,7 @@ export interface Group {
         isPublished: boolean,
         isArchived: boolean,
         isGenerated: boolean,
+        allowSwapping: boolean,
         numberOfShiftsPerDay: number,
         minNumberOfShiftsBetween: number,
         numberOfOffDays: number,
@@ -61,6 +67,7 @@ export interface Participant {
     name: string,
     group: Group | null,
     shifts: Shift[],
+    shiftsOpenForSwap: Shift[],
     color: string,
     offDays: Date[],
     friends: Participant[],
@@ -79,7 +86,10 @@ export interface Participant {
         isSupervisor: boolean,
     },
     logs: any,
-    config: any
+    config: {
+        canEdit: boolean,
+        canSwap: boolean,
+    }
 }
 
 export interface ParticipantsState extends EntityState<Participant> {
@@ -88,8 +98,12 @@ export interface ParticipantsState extends EntityState<Participant> {
 export interface ShiftsState extends EntityState<Shift> {
     selectedShiftId: number | null;
 }
-export interface GeneratedShiftsState extends EntityState<Shift> {
-    selectedShiftId: number | null;
+export interface GeneratedShiftsState extends EntityState<Shift[]> {
+    selectedIndex: number | null;
+}
+
+export interface GroupsState extends EntityState<Group> {
+    selectedGroupId: number;
 }
 export interface ErrorAlert {
     title?: string,

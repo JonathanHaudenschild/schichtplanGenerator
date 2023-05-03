@@ -124,6 +124,15 @@ const participantSchema = new Schema({
         },
     ],
     /**
+     * Shifts Open for Swap
+     */
+    shiftsOpenForSwap: [
+        {
+            type: Schema.ObjectId,
+            ref: 'Shift',
+        },
+    ],
+    /**
      * The role of the participant
      * @type {string}
      */
@@ -146,7 +155,8 @@ const participantSchema = new Schema({
     config: {
         type: Object,
         default: {
-            canEdit: true
+            canEdit: true,
+            canSwap: true
         },
     },
 });

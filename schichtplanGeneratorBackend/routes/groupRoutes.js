@@ -3,7 +3,7 @@ const router = express.Router();
 const authMiddleware = require('../middlewares/authMiddleware');
 
 const {
-    getAllGroups,
+    getGroups,
     createGroup,
     getGroupById,
     updateGroup,
@@ -11,7 +11,7 @@ const {
     generateShifts
   } = require('../controllers/groupController');
 
-router.get('/', authMiddleware, getAllGroups);
+router.get('/', authMiddleware, getGroups);
 router.post('/', authMiddleware, createGroup);
 router.get('/:groupId', authMiddleware, getGroupById);
 router.put('/:groupId', authMiddleware, updateGroup);

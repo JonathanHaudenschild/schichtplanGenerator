@@ -4,19 +4,26 @@ import { concatLatestFrom } from "@ngrx/effects";
 import { UserState } from "./users/users.model";
 import { userReducer } from "./users/users.reducer";
 import { UserEffects } from "./users/users.effects";
+import { ScheduleState } from "./schedule/schedule.model";
+import { ScheduleEffects } from "./schedule/schedule.effects";
+import { scheduleReducer } from "./schedule/schedule.reducer";
+import { StorageService } from "../services/storage.service";
+import { RouterReducerState, routerReducer } from "@ngrx/router-store";
 
-export const COURSES_KEY = '__courses';
 export const CONFIG_KEY = '__config';
 export const USER_KEY = '__user';
-export const DASHBOARD_KEY = '__dashboard';
 export interface AppState {
     user: UserState,
+    router: RouterReducerState,
+    schedule: ScheduleState
 }
 
-export const effects: any[] = [UserEffects]
+export const effects: any[] = [UserEffects, ScheduleEffects]
 
 export const reducers: ActionReducerMap<AppState> = {
     user: userReducer,
+    schedule: scheduleReducer,
+    router: routerReducer,
 }
 
 export const metaReducers: MetaReducer[] = [
@@ -29,13 +36,13 @@ export const metaReducers: MetaReducer[] = [
  * @param storage Injecting Storage service into reducer
  * @returns 
  */
-export function getMetaReducers(): MetaReducer<AppState> {
+export function getMetaReducers(storage: StorageService): MetaReducer<AppState> {
     function storing(reducer: ActionReducer<AppState>): ActionReducer<AppState> {
         return (state, action) => {
             const nextState = reducer(state, action);
-            // if (nextState?.user && action.type.includes("[User]")) {
-            //     storage.set(USER_KEY, nextState?.user);
-            // }
+            if (nextState?.user && action.type.includes("[User]")) {
+                storage.set(USER_KEY, nextState?.user);
+            }
             return nextState;
         };
     }

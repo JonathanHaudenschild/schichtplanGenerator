@@ -71,6 +71,7 @@ const groupSchema = new Schema({
             isPublished: false,
             isGenerated: false,
             isArchived: false,
+            allowSwapping: false,
             numberOfShiftsPerDay: 1,
             minNumberOfShiftsBetween: 2,
             numberOfOffDays: 1,
