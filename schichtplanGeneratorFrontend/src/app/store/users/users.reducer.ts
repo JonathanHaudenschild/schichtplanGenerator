@@ -23,6 +23,7 @@ export const initUserState: UserState = {
 
 export const userReducer = createReducer(
     initUserState,
+    on(user.initUserSuccess, (state, { initState }) => ({ ...state, ...initState, status: { ...initState.status, isLoading: false } })),
     on(user.signUpSuccess, (state) => ({ ...state, status: { ...state.status } })),
     on(user.signInSuccess, (state, { user }) => ({ ...state, user, status: { ...state.status, isLoading: false, isLoggedIn: true, isAuthenticated: true } })),
     on(user.signIn, (state) => ({ ...state, status: { ...state.status, isLoading: true } })),

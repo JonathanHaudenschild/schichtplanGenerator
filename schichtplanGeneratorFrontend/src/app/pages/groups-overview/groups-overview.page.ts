@@ -32,10 +32,6 @@ export class GroupsOverviewPage implements OnInit {
     )
   }
 
-  async ionViewDidEnter() {
-    this.store.dispatch(getParticipants());
-  }
-
 
 
   onParticipantAdded(participant: Participant) {

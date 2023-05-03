@@ -106,7 +106,7 @@ export class ScheduleEffects {
 
     getParticipants$ = createEffect(() =>
         this.actions$.pipe(
-            ofType(ScheduleActions.getParticipants),
+            ofType(ScheduleActions.getParticipants, ScheduleActions.getGroupByIdSuccess),
             concatLatestFrom(() => this.store.select(selectSelectedGroupId)),
             exhaustMap(([, groupId]) =>
                 this.participantsService.getParticipants(groupId).pipe(

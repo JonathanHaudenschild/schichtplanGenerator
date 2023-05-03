@@ -38,9 +38,13 @@ export const metaReducers: MetaReducer[] = [
  */
 export function getMetaReducers(storage: StorageService): MetaReducer<AppState> {
     function storing(reducer: ActionReducer<AppState>): ActionReducer<AppState> {
+
         return (state, action) => {
+
             const nextState = reducer(state, action);
+             console.log(state, action, nextState)
             if (nextState?.user && action.type.includes("[User]")) {
+                console.log('nextState', state?.user, nextState.user)
                 storage.set(USER_KEY, nextState?.user);
             }
             return nextState;

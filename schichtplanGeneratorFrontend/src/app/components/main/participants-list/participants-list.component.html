@@ -1,5 +1,5 @@
 <ion-list>
   <ion-item *ngFor="let participant of participants" (click)="onParticipantSelected(participant)">
-    {{ participant.name }}
+    {{ participant.participantToken }} - {{ participant.name }}
   </ion-item>
 </ion-list>
