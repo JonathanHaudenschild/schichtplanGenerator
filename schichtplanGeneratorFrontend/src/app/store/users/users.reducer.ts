@@ -7,7 +7,7 @@ export const initUserState: UserState = {
     user: {
         profileUser: {
             _id: 0,
-            username: '',
+            userName: '',
             email: '',
         },
         token: '',

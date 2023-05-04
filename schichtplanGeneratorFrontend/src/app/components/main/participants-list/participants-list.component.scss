@@ -1,0 +1,35 @@
+.header-row {
+    font-weight: bold;
+    text-transform: uppercase;
+  }
+  
+  ion-grid {
+    --ion-grid-padding: 0;
+  }
+  
+  ion-row {
+    --ion-grid-column-padding: 0;
+    align-items: center;
+  }
+  
+  ion-col {
+    padding: 4px 8px;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    word-break: break-all;
+  }
+  
+  ion-buttons {
+    margin: 0;
+  }
+  
+  ion-button {
+    padding: 0;
+  }
+  
+  @media (max-width: 480px) {
+    ion-col {
+      font-size: 12px;
+    }
+  }
+  

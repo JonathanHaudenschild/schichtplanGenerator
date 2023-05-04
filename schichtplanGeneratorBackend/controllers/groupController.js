@@ -1,11 +1,36 @@
+const { differenceInMilliseconds, isSameDay } = require('date-fns');
 const Group = require('../models/groupSchema');
 const Participant = require('../models/participantSchema');
 const Shift = require('../models/shiftSchema');
 const { getShifts } = require('./shiftController');
+const User = require('../models/userSchema');
+
+const initGroup = {
+  groupName: '',
+  participants: [],
+  shifts: [],
+  schedule: [],
+  startDate: new Date(),
+  endDate: new Date(),
+  config: {
+    isArchived: false,
+    allowSwapping: false,
+    numberOfShiftsPerDay: 0,
+    minTimeBetweenShifts: 0,
+    numberOfOffDays: 1,
+    minParticipantsPerShift: 4,
+    maxParticipantsPerShift: 8,
+    minSupervisorsPerShift: 2,
+    maxSupervisorsPerShift: 2,
+  },
+}
+
 
 exports.getGroups = async (req, res) => {
   try {
-    const groups = await Group.find();
+    const user = await User.findById(req.user.id); // Get the authenticated user's information
+    const groups = await Group.find({ _id: { $in: user.groups } }); // Find groups that the user belongs to
+
     res.status(200).json(groups);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -14,8 +39,18 @@ exports.getGroups = async (req, res) => {
 
 exports.createGroup = async (req, res) => {
   try {
-    const newGroup = new Group(req.body);
+    const user = await User.findById(req.user.id); // Get the authenticated user's information
+
+    const newGroupObject = {
+      ...initGroup,
+      ...req.body,
+    }
+    console.log(newGroupObject);
+    const newGroup = new Group(newGroupObject);
+
     const savedGroup = await newGroup.save();
+    user.groups.push(savedGroup._id); // Add the new group to the user's groups
+    await user.save();
     res.status(201).json(savedGroup);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -24,8 +59,13 @@ exports.createGroup = async (req, res) => {
 
 exports.getGroupById = async (req, res) => {
   try {
+    const user = await User.findById(req.user.id); // Get the authenticated user's information
     const group = await Group.findById(req.params.groupId);
+    // check if group is in user's groups
     if (!group) return res.status(404).json({ error: 'Group not found' });
+    if (!user.groups.includes(group._id)) {
+      return res.status(403).json({ error: 'You are not authorized to view this group' });
+    }
     res.status(200).json(group);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -34,8 +74,20 @@ exports.getGroupById = async (req, res) => {
 
 exports.updateGroup = async (req, res) => {
   try {
-    const updatedGroup = await Group.findByIdAndUpdate(req.params.groupId, req.body, { new: true });
-    if (!updatedGroup) return res.status(404).json({ error: 'Group not found' });
+    const user = await User.findById(req.user.id); // Get the authenticated user's information
+    // check if group is in user's groups
+    const group = await Group.findById(req.params.groupId);
+
+    if (!group) return res.status(404).json({ error: 'Group not found' });
+    if (!user.groups.includes(group._id)) {
+      return res.status(403).json({ error: 'You are not authorized to update this group' });
+    }
+    const newGroupObject = {
+      ...group.toObject(),
+      ...req.body,
+    }
+    console.log(group, req.body);
+    const updatedGroup = await Group.findByIdAndUpdate(group._id, newGroupObject, { new: true });
     res.status(200).json(updatedGroup);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -44,8 +96,15 @@ exports.updateGroup = async (req, res) => {
 
 exports.deleteGroup = async (req, res) => {
   try {
-    const group = await Group.findByIdAndDelete(req.params.groupId);
+    const user = await User.findById(req.user.id); // Get the authenticated user's information
+    // check if group is in user's groups
+    const group = await Group.findById(req.params.groupId);
+
     if (!group) return res.status(404).json({ error: 'Group not found' });
+    if (!user.groups.includes(group._id)) {
+      return res.status(403).json({ error: 'You are not authorized to delete this group' });
+    }
+    const deletedGroup = await Group.findByIdAndDelete(req.params.groupId);
     res.status(200).json({ message: 'Group deleted' });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -55,11 +114,17 @@ exports.deleteGroup = async (req, res) => {
 exports.generateShifts = async (req, res) => {
   try {
     const { groupId } = req.params;
+    const user = await User.findById(req.user.id); // Get the authenticated user's information
+    // check if group is in user's groups
+    const group = await Group.findById(req.params.groupId);
 
+    if (!group) return res.status(404).json({ error: 'Group not found' });
+    if (!user.groups.includes(group._id)) {
+      return res.status(403).json({ error: 'You are not authorized to generateShifts for this group' });
+    }
     // 1. Load the group, participants, and current shifts
-    const group = await Group.findById(groupId);
-    const participants = await Participant.find({ group: groupId }).populate('friends');
-    const shifts = await Shift.find({ group: groupId }).sort({ day: 1, order: 1 }).populate('participants');
+    const participants = await Participant.find({ group: groupId }).populate(['friends', 'enemies']);
+    const shifts = await Shift.find({ group: groupId }).sort({ order: 1 }).populate('participants');
 
     // 2. Prepare data structures and helper functions for shift generation
 
@@ -86,32 +151,38 @@ const checkArrivalDepartureAbsences = (participant, currentShift) => {
   const absences = participant.absences;
 
   // Check if the participant's arrivalTime and departureTime allow them to be assigned on the given day
-  if (currentShift.day < arrivalTime || currentShift.day > departureTime) {
+  if (isBefore(currentShift.endDate, arrivalTime) || isAfter(currentShift.startDate, departureTime)) {
     return false;
   }
 
   // Check if the participant has an absence on the given day
   for (const absence of absences) {
-    if (currentShift.day >= absence.startDate && currentShift.day <= absence.endDate) {
+    if (
+      (isBefore(currentShift.startDate, absence.startDate) && isAfter(currentShift.endDate, absence.startDate)) ||
+      (isBefore(currentShift.startDate, absence.endDate) && isAfter(currentShift.endDate, absence.endDate)) ||
+      (isAfter(currentShift.startDate, absence.startDate) && isBefore(currentShift.startDate, absence.endDate)) ||
+      (isAfter(currentShift.endDate, absence.startDate) && isBefore(currentShift.endDate, absence.endDate)) ||
+      (isAfter(currentShift.startDate, absence.startDate) && isBefore(currentShift.endDate, absence.endDate)) ||
+      (isBefore(currentShift.startDate, absence.startDate) && isAfter(currentShift.endDate, absence.endDate))
+    ) {
       return false;
     }
   }
-
   return true;
-};
+}
 
-const checkOffShiftsBetween = (participant, currentShift, minNumberOfShiftsBetween = 0) => {
+const checkMinTimeBetweenShifts = (participant, currentShift, minBreakTimeBetween = 2) => {
 
   // If there's no last assigned shift, this participant is eligible for a new shift
   if (participant.shifts.length === 0) {
     return true;
   }
+  const filteredShifts = participant.shifts.filter(shift => shift._id !== currentShift._id);
 
-  const lastAssignedShift = participant.shifts[participant.shifts.length - 1];
-  const numberOfShiftsBetween = currentShift.order - lastAssignedShift.order;
-
-  // Check if the minimum number of off shifts between the participant's shifts is satisfied
-  return numberOfShiftsBetween > minNumberOfShiftsBetween;
+  return filteredShifts.every(shift => {
+    const timeBetweenShifts = differenceInMilliseconds(currentShift.startDate, shift.endDate);
+    return timeBetweenShifts > minBreakTimeBetween;
+  });
 };
 
 const checkOffDays = (participant, currentShift, numberOfOffDays = 1) => {
@@ -120,7 +191,7 @@ const checkOffDays = (participant, currentShift, numberOfOffDays = 1) => {
   // Check if the day is not within the participant's desired offDays
   for (const offDay of offDays) {
     const offDayDate = new Date(offDay);
-    if (currentShift.day.toDateString() === offDayDate.toDateString()) {
+    if (isSameDay(currentShift.startDate, offDayDate) || isSameDay(currentShift.endDate, offDayDate)) {
       return false;
     }
   }
@@ -131,27 +202,30 @@ const checkOffDays = (participant, currentShift, numberOfOffDays = 1) => {
 
 
 
-
+/**
+ * 
+ * @param {*} participant 
+ * @param {*} currentShift 
+ * @returns 
+ */
 const checkEnemies = (participant, currentShift) => {
-  const participantEnemies = participant.enemies;
+  const filteredParticipants = currentShift.participants.filter(p => p.participantToken.toString() !== participant.participantToken.toString());
+  return !((filteredParticipants.some(p => participant.enemies.includes(p.participantToken.toString()))) ||
+    (filteredParticipants.some(p => participant.enemies.includes(p.displayName.toString())))
+  )
+};
 
-  // Check if the participant has no enemies within the shift
-  for (const enemyParticipantToken of participantEnemies) {
-    for (const assignedParticipant of currentShift.participants) {
-      if (assignedParticipant.participantToken.toString() === enemyParticipantToken.toString()) {
-        return false;
-      }
-    }
-  }
-
-  // If no enemies are found in the shift, return true
-  return true;
+const checkFriends = (participant, currentShift) => {
+  const filteredParticipants = currentShift.participants.filter(p => p.participantToken.toString() !== participant.participantToken.toString());
+  return (filteredParticipants.some(p => participant.friends.includes(p.participantToken.toString()))) ||
+    (filteredParticipants.some(p => participant.friends.includes(p.displayName.toString())))
 };
 
 const checkExperienceMixing = (participant, currentShift) => {
   let experiencedCount = 0;
-  for (const participant of currentShift.participants) {
-    experiencedCount += participant.experience;
+  const filteredParticipants = currentShift.participants.filter(p => p.participantToken.toString() !== participant.participantToken.toString());
+  for (const otherParticipant of filteredParticipants) {
+    experiencedCount += otherParticipant.experience;
   }
   if (participant.experience > 0 && experiencedCount < currentShift.config.minParticipants / 2) {
     {
@@ -163,26 +237,12 @@ const checkExperienceMixing = (participant, currentShift) => {
   return false;
 };
 
-const checkFriends = (participant, currentShift) => {
-  for (const friendId of participant.friends) {
-    if (currentShift.participants.some(participant => participant._id.toString() === friendId)) {
-      return true;
-    }
+const checkShiftPreferences = (participant, currentShift) => participant.shiftPreferences.includes(currentShift.type);
 
-  }
-  return false;
+const checkCategoryMatchesRole = (participant, currentShift) => {
+  return currentShift.category === participant.role
 };
 
-const checkShiftPreferences = (participant, currentShift) => {
-  const shiftPreferences = participant.config.shiftPreferences;
-
-  if (shiftPreferences.isNightShift && !currentShift.config.isNightShift) return false;
-  // if (shiftPreferences.isDayShift && !currentShift.config.isDayShift) return false;
-  if (shiftPreferences.isEarlyShift && !currentShift.config.isEarlyShift) return false;
-  if (shiftPreferences.isLateShift && !currentShift.config.isLateShift) return false;
-
-  return true;
-};
 
 const checkParticipantsPerShift = (currentShift) => {
   const minParticipants = currentShift.config.minParticipants;
@@ -192,17 +252,20 @@ const checkParticipantsPerShift = (currentShift) => {
   return numberOfParticipants >= minParticipants && numberOfParticipants <= maxParticipants;
 };
 
-const calculateCost = (group) => {
-  let cost = 0;
 
-  group.schedule.forEach((currentShift) => {
+const calculateCost = (schedule) => {
+  let cost = 0;
+  schedule.forEach((currentShift) => {
     currentShift.participants.forEach((participant) => {
       const day = shift.day;
 
       if (!checkArrivalDepartureAbsences(participant, currentShift)) {
         cost += 5000; // High priority
       }
-      if (!checkOffShiftsBetween(participant, currentShift, group.config.minNumberOfShiftsBetween)) {
+      if (!checkCategoryMatchesRole(participant, currentShift)) {
+        cost += 2500;
+      }
+      if (!checkMinTimeBetweenShifts(participant, currentShift, group.config.minTimeBetweenShifts)) {
         cost += 2000;
       }
       if (!checkEnemies(participant, currentShift)) {
@@ -294,7 +357,7 @@ const generateInitialSchedule = (group, participants, shifts) => {
       // Check if the participant can be assigned to the shift based on the constraints
       if (
         checkArrivalDepartureAbsences(participant, currentShift) &&
-        checkOffShiftsBetween(participant, currentShift, group.config.minNumberOfShiftsBetween) &&
+        checkMinTimeBetweenShifts(participant, currentShift, group.config.minNumberOfShiftsBetween) &&
         checkEnemies(participant, currentShift) &&
         checkParticipantsPerShift(currentShift)
       ) {

@@ -9,7 +9,7 @@ export interface User {
     token: string
 }
 export interface SignUpUser {
-    username: string,
+    userName: string,
     email: string,
     password: string,
     repeatPassword: string,
@@ -21,7 +21,7 @@ export interface SignInUser {
 }
 export interface ProfileUser {
     email: string,
-    username: string,
+    userName: string,
     _id: number,
     config?: any,
     groups?: any[],

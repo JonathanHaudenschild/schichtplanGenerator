@@ -1,28 +1,29 @@
 <form [formGroup]="groupForm" (ngSubmit)="onSubmit()">
   <!-- Name -->
   <ion-item>
-    <ion-label>Name</ion-label>
-    <ion-input formControlName="name" type="text" required></ion-input>
+    <ion-label position="stacked">Group Name</ion-label>
+    <ion-input formControlName="groupName" type="text" required></ion-input>
   </ion-item>
 
   <!-- Start Date -->
   <ion-item>
-    <ion-label>Start Date</ion-label>
+    <ion-label position="stacked">Start Date</ion-label>
     <ion-datetime-button datetime="startDate"></ion-datetime-button>
     <ion-modal [keepContentsMounted]="true">
       <ng-template>
-        <ion-datetime id="startDate" formControlName="startDate"></ion-datetime>
+        <ion-datetime id="startDate" formControlName="startDate" minuteValues="0,15,30,45"></ion-datetime>
       </ng-template>
     </ion-modal>
   </ion-item>
 
+
   <!-- End Date -->
   <ion-item>
-    <ion-label>End Date</ion-label>
+    <ion-label position="stacked">End Date</ion-label>
     <ion-datetime-button datetime="endDate"></ion-datetime-button>
     <ion-modal [keepContentsMounted]="true">
       <ng-template>
-        <ion-datetime id="endDate" formControlName="endDate"></ion-datetime>
+        <ion-datetime id="endDate" formControlName="endDate" minuteValues="0,15,30,45"></ion-datetime>
       </ng-template>
     </ion-modal>
   </ion-item>
@@ -34,8 +35,30 @@
     </ion-item-divider>
 
     <ion-item>
-      <ion-label>Is Editable</ion-label>
-      <ion-toggle formControlName="isEditable"></ion-toggle>
+      <ion-label position="stacked">Allow Swapping</ion-label>
+      <ion-toggle formControlName="allowSwapping"></ion-toggle>
+    </ion-item>
+    <ion-item>
+      <ion-label position="stacked">Number of Shifts per Day</ion-label>
+      <ion-input formControlName="numberOfShiftsPerDay" type="number"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label position="stacked">Number of Off Days</ion-label>
+      <ion-input formControlName="numberOfOffDays" type="number"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label position="stacked">Min time Between Shifts (Hours)</ion-label>
+      <ion-input formControlName="minTimeBetweenShifts" type="number"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label position="stacked">Participants per Shift</ion-label>
+      <ion-range aria-label="Range with ticks" id="participantsPerShift" formGroupName="participantsPerShift" [dualKnobs]="true" [snaps]="true"
+        [min]="1" [max]="10" [pin]="true"></ion-range>
+    </ion-item>
+    <ion-item>
+      <ion-label position="stacked">Supervisors per Shift</ion-label>
+      <ion-range aria-label="Range with ticks" id="supervisorsPerShift" formGroupName="supervisorsPerShift" [dualKnobs]="true" [snaps]="true"
+        [min]="1" [max]="4"></ion-range>
     </ion-item>
 
     <!-- Add other config properties -->

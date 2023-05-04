@@ -21,28 +21,21 @@ export const groupsAdapter: EntityAdapter<Group> = createEntityAdapter<Group>({
 const initParticipant: Participant =
 {
     _id: 0,
-    name: '',
     participantToken: '',
+    displayName: '',
     group: null,
-    shifts: [],
-    shiftsOpenForSwap: [],
     color: '',
     offDays: [],
     friends: [],
     enemies: [],
-    shiftPreferences: {
-        isNightShift: false,
-        isLateShift: false,
-        isEarlyShift: false,
-    },
+    shiftPreferences: 0,
     experience: 0,
     arrivalTime: new Date(),
     departureTime: new Date(),
     absences: [],
-    role: {
-        isParticipant: true,
-        isSupervisor: false,
-    },
+    shifts: [],
+    shiftsOpenForSwap: [],
+    role: 0,
     logs: null,
     config: {
         canEdit: false,
@@ -52,18 +45,16 @@ const initParticipant: Participant =
 
 const initShift: Shift = {
     _id: 0,
-    name: '',
-    order: 0,
-    day: new Date(),
+    shiftName: '',
     group: null,
     participants: [],
     startDate: new Date(),
     endDate: new Date(),
+    category: 0,
+    type: 0,
+    experienceLevel: 0,
     config: {
         isLocked: false,
-        isNightShift: false,
-        isLateShift: false,
-        isEarlyShift: false,
         disableSwap: false,
         minParticipants: 0,
         maxParticipants: 8,
@@ -74,28 +65,23 @@ const initShift: Shift = {
 
 const initGroup: Group = {
     _id: 0,
-    name: '',
+    groupName: '',
     participants: [],
     shifts: [],
     schedule: [],
     startDate: new Date(),
     endDate: new Date(),
     config: {
-        isEditable: false,
-        isPublic: false,
-        isPublished: false,
         isArchived: false,
-        isGenerated: false,
         allowSwapping: false,
         numberOfShiftsPerDay: 0,
-        minNumberOfShiftsBetween: 0,
+        minTimeBetweenShifts: 0,
         numberOfOffDays: 0,
         minParticipantsPerShift: 0,
         maxParticipantsPerShift: 0,
         minSupervisorsPerShift: 0,
         maxSupervisorsPerShift: 0,
     },
-    editors: [],
 }
 
 const initParticipantsState: ParticipantsState = participantsAdapter.getInitialState(

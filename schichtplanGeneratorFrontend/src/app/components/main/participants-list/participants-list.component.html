@@ -1,5 +1,31 @@
-<ion-list>
-  <ion-item *ngFor="let participant of participants" (click)="onParticipantSelected(participant)">
-    {{ participant.participantToken }} - {{ participant.name }}
-  </ion-item>
-</ion-list>
+<ion-grid>
+  <ion-row class="header-row">
+    <ion-col size="3">Name</ion-col>
+    <ion-col size="2">Token</ion-col>
+    <ion-col size="1">Away</ion-col>
+    <ion-col size="1">Shifts</ion-col>
+    <ion-col size="2">Free</ion-col>
+    <ion-col size="2">Actions</ion-col>
+  </ion-row>
+  <ion-row *ngFor="let participant of participants" (click)="onParticipantSelected(participant)" [style.background-color]="participant.color">
+    <ion-col size="3">{{ participant.displayName }}</ion-col>
+    <ion-col size="2">{{ participant.participantToken }}</ion-col>
+    <ion-col size="1">{{ participant.absences.length }}</ion-col>
+    <ion-col size="1">{{ participant.shifts.length }}</ion-col>
+    <ion-col size="2">
+      <div *ngFor="let offDay of participant.offDays">
+        {{ offDay | date:'EE' }}&nbsp;
+      </div>
+    </ion-col>
+    <ion-col size="2">
+      <ion-buttons>
+        <ion-button size="small" fill="clear" (click)="onEditParticipant(participant); $event.stopPropagation();">
+          <ion-icon name="create-outline"></ion-icon>
+        </ion-button>
+        <ion-button size="small" fill="clear" (click)="onDeleteParticipant(participant); $event.stopPropagation();">
+          <ion-icon name="close-outline"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+    </ion-col>
+  </ion-row>
+</ion-grid>

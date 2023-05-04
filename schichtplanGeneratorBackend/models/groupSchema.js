@@ -10,7 +10,7 @@ const groupSchema = new Schema({
      * The unique name of the group
      * @type {string}
      */
-    name: {
+    groupName: {
         type: String,
         required: true,
         unique: true,
@@ -66,27 +66,17 @@ const groupSchema = new Schema({
     config: {
         type: Object,
         default: {
-            isEditable: true,
-            isPublic: false,
-            isPublished: false,
-            isGenerated: false,
             isArchived: false,
             allowSwapping: false,
             numberOfShiftsPerDay: 1,
-            minNumberOfShiftsBetween: 2,
+            minTimeBetweenShifts: 12 * 60 * 60 * 1000,
             numberOfOffDays: 1,
+            minParticipantsPerShift: 4,
+            maxParticipantsPerShift: 8,
+            minSupervisorsPerShift: 2,
+            maxSupervisorsPerShift: 2,
         },
     },
-    /**
-     * The users who can edit the group
-     * @type {Array}
-     */ 
-    editors: [
-        {
-            type: Schema.ObjectId,
-            ref: 'User',
-        },
-    ],
 });
 
 const Group = mongoose.model('Group', groupSchema);

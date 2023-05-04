@@ -1,5 +1,33 @@
-<ion-list>
-  <ion-item *ngFor="let group of groups" (click)="onGroupSelected(group)">
-    {{ group.name }}
-  </ion-item>
-</ion-list>
+<ion-grid>
+  <ion-row>
+    <ion-col size="12" size-md="6" size-lg="4" *ngFor="let group of groups">
+      <ion-card color="primary" [ngClass]="{'archived': group.config.isArchived}" (click)="onGroupSelected(group)">
+        <ion-card-header>
+          <div class="ion-card-header">
+            <ion-card-title>{{ group.groupName }}</ion-card-title>
+            <ion-buttons>
+              <ion-button (click)="onEditGroup(group); $event.stopPropagation();">
+                <ion-icon name="create-outline"></ion-icon>
+              </ion-button>
+              <ion-button (click)="onDeleteGroup(group); $event.stopPropagation();">
+                <ion-icon name="close-outline"></ion-icon>
+              </ion-button>
+            </ion-buttons>
+          </div>
+        </ion-card-header>
+
+        <ion-card-content>
+          <p>Participants: {{ group.participants.length }}</p>
+          <p>Shifts: {{ group.shifts.length }}</p>
+          <p>Start Date: {{ group.startDate | date }}</p>
+          <p>End Date: {{ group.endDate | date }}</p>
+        </ion-card-content>
+      </ion-card>
+    </ion-col>
+    <ion-col size="12" size-md="6" size-lg="4" class="add-button-container">
+      <ion-card color="primary">
+        <ng-content #addGroup></ng-content>
+      </ion-card>
+    </ion-col>
+  </ion-row>
+</ion-grid>

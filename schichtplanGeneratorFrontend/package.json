@@ -29,6 +29,8 @@
     "@ngrx/effects": "^15.4.0",
     "@ngrx/entity": "^15.4.0",
     "@ngrx/router-store": "^15.4.0",
+    "date-fns": "^2.30.0",
+    "date-fns-tz": "^2.0.0",
     "ionicons": "^7.0.0",
     "ngrx": "0.0.1-security",
     "rxjs": "~7.5.0",

@@ -24,8 +24,8 @@ export class ParticipantsAddComponent implements OnInit {
 
   constructor(private fb: FormBuilder, private modalCtrl: ModalController) {
     this.participantForm = this.fb.group({
-      participantToken: ['', Validators.required],
-      name: [''],
+      participantToken: [''],
+      displayName: [''],
       color: [''],
       offDays: [new Date().toISOString()],
       friends: [[]],

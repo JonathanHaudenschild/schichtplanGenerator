@@ -18,7 +18,7 @@ const participantSchema = new Schema({
      * The name of the participant
      * @type {string}
      */
-    name: {
+    displayName: {
         type: String,
         required: true,
     },
@@ -48,36 +48,37 @@ const participantSchema = new Schema({
     ],
     /**
      * The friends of the participant
-     * @type {Array<Schema.ObjectId>}
+     * @type {Array<string>}
      */
     friends: [
         {
-            type: Schema.ObjectId,
-            ref: 'Participant',
+            type: String,
         },
     ],
     /**
      * The enemies of the participant
-     * @type {Array<Schema.ObjectId>}
+     * @type {Array<string>}
      */
     enemies: [
         {
-            type: Schema.ObjectId,
-            ref: 'Participant',
+            type: String,
         },
     ],
     /**
      * The shift preferences of the participant
-     * @type {Object}
+     * @type {Array<number>}
+     * 0 - No preference
+     * 1 - Morning
+     * 2 - Afternoon
+     * 3 - Evening
+     * 4 - Night 
+     * 
      */
-    shiftPreferences: {
-        type: Object,
-        default: {
-            isNightShift: false,
-            isEarlyShift: false,
-            isLateShift: false,
+    shiftPreferences: [
+        {
+            type: Number,
         },
-    },
+    ],
     /**
      * The experience of the participant
      * @type {number}
@@ -134,14 +135,14 @@ const participantSchema = new Schema({
     ],
     /**
      * The role of the participant
-     * @type {string}
+     * @type {Number}
+     * 0 - Normal
+     * 1 - Seeseite
+     * 2 - Supervision
+     * 
      */
     role: {
-        type: Object,
-        default: {
-            isParticipant: true,
-            isSupervisor: false,
-        },
+        type: Number,
     },
     /**
      * The logs related to the participant

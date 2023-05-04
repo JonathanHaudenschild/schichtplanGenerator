@@ -6,13 +6,13 @@ import { Component, OnInit, Output, EventEmitter } from '@angular/core';
   styleUrls: ['./register.component.scss'],
 })
 export class RegisterComponent implements OnInit {
-  @Output() registerSubmit = new EventEmitter<{ name: string; email: string; password: string; repeatpassword: string }>();
+  @Output() registerSubmit = new EventEmitter<{ userName: string; email: string; password: string; repeatPassword: string }>();
 
   registrationData = {
-    name: '',
+    userName: '',
     email: '',
     password: '',
-    repeatpassword: '',
+    repeatPassword: '',
   };
 
   constructor() { }
@@ -20,7 +20,7 @@ export class RegisterComponent implements OnInit {
   ngOnInit() { }
 
   onSubmit() {
-    if (this.registrationData.name && this.registrationData.email && this.registrationData.password && this.registrationData.repeatpassword) {
+    if (this.registrationData.userName && this.registrationData.email && this.registrationData.password && this.registrationData.repeatPassword) {
       this.registerSubmit.emit(this.registrationData);
     }
   }

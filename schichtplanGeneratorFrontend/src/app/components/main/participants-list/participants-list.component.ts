@@ -9,6 +9,8 @@ import { Participant } from 'src/app/store/schedule/schedule.model';
 export class ParticipantsListComponent  implements OnInit {
   @Input() participants: Participant[] | null = [];
   @Output() participantSelected = new EventEmitter<Participant>();
+  @Output() participantEdit = new EventEmitter<Participant>();
+  @Output() participantDelete = new EventEmitter<Participant>();
   constructor() { }
 
   ngOnInit() { }
@@ -17,5 +19,14 @@ export class ParticipantsListComponent  implements OnInit {
     console.log(participant)
     this.participantSelected.emit(participant);
   }
+
+  onEditParticipant(participant: Participant) {
+    this.participantEdit.emit(participant);
+  }
+
+  onDeleteParticipant(participant: Participant) {
+    this.participantDelete.emit(participant);
+  }
+  
 
 }

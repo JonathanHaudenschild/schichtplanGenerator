@@ -1,0 +1,40 @@
+ion-card {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .ion-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  ion-card-title {
+    flex-grow: 1;
+  }
+  
+  ion-buttons {
+    display: flex;
+  }
+  
+  ion-button {
+    --padding-start: 0;
+    --padding-end: 0;
+    --padding-top: 0;
+    --padding-bottom: 0;
+  }
+
+  .add-button-container{
+    display: flex;
+    align-items: center;
+  }
+  
+  .archived {
+    background-color: rgba(211, 211, 211, 0.5);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+  }
+  
+  .archived ion-card-title {
+    text-decoration: line-through;
+  }
+  

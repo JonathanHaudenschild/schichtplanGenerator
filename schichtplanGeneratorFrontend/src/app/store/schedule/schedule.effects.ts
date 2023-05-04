@@ -74,6 +74,46 @@ export class ScheduleEffects {
         )
     );
 
+    updateGroup$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(ScheduleActions.updateGroup),
+            exhaustMap(({ group }) =>
+                this.groupsService.updateGroup(group._id, group).pipe(
+                    map((response) => {
+                        const group = response.data;
+                        return ScheduleActions.updateGroupSuccess({ group });
+                    }),
+                    catchError((error: ErrorAlert) =>
+                        of(ScheduleActions.updateGroupFailure({ errorAlert: error }))
+                    )
+                )
+            )
+        )
+    );
+
+    deleteGroup$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(ScheduleActions.deleteGroup),
+            exhaustMap(({ group }) =>
+                this.groupsService.deleteGroup(group._id).pipe(
+                    map((response) => {
+                        const group = response.data;
+                        return ScheduleActions.deleteGroupSuccess({ group });
+                    }),
+                    catchError((error: ErrorAlert) =>
+                        of(ScheduleActions.deleteGroupFailure({ errorAlert: error }))
+                    )
+                )
+            )
+        )
+    );
+
+
+
+
+
+
+
 
     handleRoutingToGroupOverview$ = createEffect(() =>
         this.actions$.pipe(

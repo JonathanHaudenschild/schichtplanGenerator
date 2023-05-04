@@ -9,24 +9,8 @@ const shiftSchema = new Schema({
      * The name of the shift
      * @type {string}
      */
-    name: {
+    shiftName: {
         type: String,
-        required: true,
-    },
-    /**
-     * The order of the shift
-     * @type {number}
-     */
-    order: {
-        type: Number,
-        required: true,
-    },
-    /**
-     * The day of the shift
-     * @type {number}
-     */
-    day: {
-        type: Date,
         required: true,
     },
     /**
@@ -64,6 +48,37 @@ const shiftSchema = new Schema({
         required: true,
     },
     /**
+     * The category of the shift
+     * @type {number}
+     * 0 = normal shift
+     * 1 = seeseite shift
+     * 2 = supervision shift
+     */
+    category: {
+        type: Number,
+        required: true,
+    },
+    /**
+     * The type of the shift
+     * @type {number}
+     * 0 - No preference
+     * 1 - Morning
+     * 2 - Afternoon
+     * 3 - Evening
+     * 4 - Night 
+     */
+    type: {
+        type: Number,
+        required: true,
+    },
+    /**
+     * The experience level of the shift
+     * @type {number}
+     */
+    experienceLevel: {
+        type: Number,
+    },
+    /**
      * The configuration settings for the shift
      * @type {Object}
      */
@@ -72,9 +87,6 @@ const shiftSchema = new Schema({
         default: {
             isLocked: false,
             disableSwap: false,
-            isNightShift: false,
-            isEarlyShift: false,
-            isLateShift: false,
             minParticipants: 4,
             maxParticipants: 8,
             minSupervisors: 2,

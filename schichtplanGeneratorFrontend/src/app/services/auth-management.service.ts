@@ -26,7 +26,7 @@ export class AuthManagementService {
   }
 
 
-  signUp(username: string, email: string, password: string): Observable<HttpResponse> {
+  signUp(userName: string, email: string, password: string): Observable<HttpResponse> {
     const options = {
       url: this.userURL + '/register',
       headers: {
@@ -35,7 +35,7 @@ export class AuthManagementService {
         'Cache-Control': 'no-cache',
       },
       data: {
-        username,
+        userName,
         email,
         password
       },

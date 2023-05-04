@@ -5,7 +5,7 @@ const Schema = mongoose.Schema;
  * Represents a user 
  */
 const userSchema = new Schema({
-    username: {
+    userName: {
         type: String,
         required: true,
         unique: true

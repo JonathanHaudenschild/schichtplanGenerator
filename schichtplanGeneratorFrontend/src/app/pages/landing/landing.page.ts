@@ -21,12 +21,12 @@ export class LandingPage implements OnInit {
     };
     this.store.dispatch(signIn({ signInUser }));
   }
-  handleRegisterSubmit(registrationData: { name: string; email: string; password: string }) {
+  handleRegisterSubmit(registrationData: { userName: string; email: string; password: string, repeatPassword: string }) {
     const signUpUser: SignUpUser = {
-      username: registrationData.name,
+      userName: registrationData.userName,
       email: registrationData.email,
       password: registrationData.password,
-      repeatPassword: registrationData.password,
+      repeatPassword: registrationData.repeatPassword,
     };
     this.store.dispatch(signUp({ signUpUser }));
   }

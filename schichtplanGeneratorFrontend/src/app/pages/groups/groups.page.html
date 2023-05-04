@@ -5,8 +5,13 @@
 </ion-header>
 
 <ion-content class="ion-padding">
-  <app-groups-list [groups]="groups$ | async" (groupSelected)="onGroupSelected($event)"></app-groups-list>
-  <ion-button (click)="openGroupAddModal(true)">Add Group</ion-button>
+  <app-groups-list [groups]="groups$ | async" (groupSelected)="onGroupSelected($event)"
+    (groupDelete)="onGroupDelete($event)" (groupEdit)="onGroupEdit($event)">
+    <!-- <ion-button (click)="openGroupAddModal(true)" fill="clear" color="light">Add Group</ion-button> -->
+    <ion-button (click)="onGroupAdd()" fill="clear" color="light">
+      <ion-icon slot="icon-only" name="add"></ion-icon>
+    </ion-button>
+  </app-groups-list>
 
 </ion-content>
 
@@ -24,7 +29,8 @@
       </ion-toolbar>
     </ion-header>
     <ion-content class="modal-content light-tint-background">
-      <app-group-add (groupAdded)="onGroupAdded($event)"></app-group-add>
+      <app-group-add [group]="group" [isEdit]="editMode" (groupAdded)="onGroupAdded($event)"
+        (groupEdited)="onGroupEdited($event)"></app-group-add>
     </ion-content>
   </ng-template>
 </ion-modal>

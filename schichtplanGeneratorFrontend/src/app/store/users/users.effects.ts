@@ -62,11 +62,11 @@ export class UserEffects {
         this.actions$.pipe(
             ofType(userActions.signUp),
             exhaustMap(({ signUpUser }) => {
-                const { username, email, password, repeatPassword } = signUpUser;
+                const { userName, email, password, repeatPassword } = signUpUser;
                 if (password !== repeatPassword) {
                     return of(userActions.signUpFail({ errorAlert: { title: 'user.passwordMismatch.title', message: 'user.passwordMismatch.message', showAlert: true } }));
                 }
-                return this.authService.signUp(username, email, password).pipe(
+                return this.authService.signUp(userName, email, password).pipe(
                     map(({ data }) => {
                         return userActions.signUpSuccess({
                             successAlert: { title: 'user.register.title', message: 'user.register.message', showAlert: true }
