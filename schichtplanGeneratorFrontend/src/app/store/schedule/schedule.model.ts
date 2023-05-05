@@ -57,6 +57,7 @@ export interface Group {
 export interface Participant {
     _id: number,
     participantToken: string,
+    realName: string,
     displayName: string,
     group: Group | null,
     color: string,

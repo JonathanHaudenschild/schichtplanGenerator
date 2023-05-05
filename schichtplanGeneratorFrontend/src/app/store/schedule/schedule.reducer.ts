@@ -22,6 +22,7 @@ const initParticipant: Participant =
 {
     _id: 0,
     participantToken: '',
+    realName: '',
     displayName: '',
     group: null,
     color: '',

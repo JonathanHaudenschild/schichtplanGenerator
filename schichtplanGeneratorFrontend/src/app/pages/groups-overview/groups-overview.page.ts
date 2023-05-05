@@ -3,7 +3,7 @@ import { Observable, firstValueFrom, map, tap } from 'rxjs';
 import { Participant } from 'src/app/store/schedule/schedule.model';
 import { Store } from '@ngrx/store';
 import { selectAllParticipants } from 'src/app/store/schedule/schedule.selectors';
-import { createParticipant, getGroupById, getParticipants, selectGroup, selectParticipant } from 'src/app/store/schedule/schedule.actions';
+import { createParticipant, getGroupById, getParticipants, selectGroup, selectParticipant, updateParticipant } from 'src/app/store/schedule/schedule.actions';
 import { RouterReducerState } from '@ngrx/router-store';
 import { selectRouteParams } from 'src/app/store/router/router.selector';
 
@@ -15,7 +15,8 @@ import { selectRouteParams } from 'src/app/store/router/router.selector';
 export class GroupsOverviewPage implements OnInit {
   participants$: Observable<Participant[]> = this.store.select(selectAllParticipants);
   public isOpenParticipantModal = false;
-
+  public participant: Participant | null = null;
+  public editMode = false;
   constructor(private store: Store,
     private routerStore: Store<RouterReducerState>,) { }
 
@@ -32,6 +33,16 @@ export class GroupsOverviewPage implements OnInit {
     )
   }
 
+  onParticipantAdd() {
+    this.participant = null;
+    this.editMode = false;
+    this.openParticipantAddModal(true);
+  }
+
+  onParticipantEdited(participant: Participant) {
+    console.log(participant);
+    this.store.dispatch(updateParticipant({ participant }));
+  }
 
 
   onParticipantAdded(participant: Participant) {

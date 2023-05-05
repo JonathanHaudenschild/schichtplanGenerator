@@ -1,7 +1,7 @@
 <ion-grid>
   <ion-row class="header-row">
+    <ion-col size="3">Display Name</ion-col>
     <ion-col size="3">Name</ion-col>
-    <ion-col size="2">Token</ion-col>
     <ion-col size="1">Away</ion-col>
     <ion-col size="1">Shifts</ion-col>
     <ion-col size="2">Free</ion-col>
@@ -9,7 +9,7 @@
   </ion-row>
   <ion-row *ngFor="let participant of participants" (click)="onParticipantSelected(participant)" [style.background-color]="participant.color">
     <ion-col size="3">{{ participant.displayName }}</ion-col>
-    <ion-col size="2">{{ participant.participantToken }}</ion-col>
+    <ion-col size="3">{{ participant.realName }}</ion-col>
     <ion-col size="1">{{ participant.absences.length }}</ion-col>
     <ion-col size="1">{{ participant.shifts.length }}</ion-col>
     <ion-col size="2">

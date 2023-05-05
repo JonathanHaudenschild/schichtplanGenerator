@@ -15,7 +15,16 @@ const participantSchema = new Schema({
         unique: true,
     },
     /**
-     * The name of the participant
+    * The name of the participant
+     * @type {string}
+    */
+    realName: {
+        type: String,
+        required: true,
+        unique: true,
+    },
+    /**
+     * The displayName of the participant
      * @type {string}
      */
     displayName: {

@@ -1,4 +1,4 @@
-const { differenceInMilliseconds, isSameDay } = require('date-fns');
+const { differenceInMilliseconds, isSameDay, eachDayOfInterval, isAfter, isBefore } = require('date-fns');
 const Group = require('../models/groupSchema');
 const Participant = require('../models/participantSchema');
 const Shift = require('../models/shiftSchema');
@@ -46,6 +46,12 @@ exports.createGroup = async (req, res) => {
       ...req.body,
     }
     console.log(newGroupObject);
+    delete newGroupObject._id;
+
+    if (isAfter(newGroupObject.startDate, newGroupObject.endDate)) {
+      return res.status(400).json({ error: 'End date must be after start date' });
+    }
+
     const newGroup = new Group(newGroupObject);
 
     const savedGroup = await newGroup.save();
@@ -210,15 +216,19 @@ const checkOffDays = (participant, currentShift, numberOfOffDays = 1) => {
  */
 const checkEnemies = (participant, currentShift) => {
   const filteredParticipants = currentShift.participants.filter(p => p.participantToken.toString() !== participant.participantToken.toString());
-  return !((filteredParticipants.some(p => participant.enemies.includes(p.participantToken.toString()))) ||
-    (filteredParticipants.some(p => participant.enemies.includes(p.displayName.toString())))
+  return !(
+    (filteredParticipants.some(p => participant.enemies.includes(p.participantToken.toString()))) ||
+    (filteredParticipants.some(p => participant.enemies.includes(p.displayName.toString())) ||
+      filteredParticipants.some(p => (participant.enemies.includes(p.realName.toString()))))
   )
 };
 
 const checkFriends = (participant, currentShift) => {
   const filteredParticipants = currentShift.participants.filter(p => p.participantToken.toString() !== participant.participantToken.toString());
   return (filteredParticipants.some(p => participant.friends.includes(p.participantToken.toString()))) ||
-    (filteredParticipants.some(p => participant.friends.includes(p.displayName.toString())))
+    (filteredParticipants.some(p => participant.friends.includes(p.displayName.toString()))) ||
+    (filteredParticipants.some(p => participant.friends.includes(p.realName.toString())))
+
 };
 
 const checkExperienceMixing = (participant, currentShift) => {
@@ -293,8 +303,7 @@ const calculateCost = (schedule) => {
 };
 
 
-const generateRandomNeighbor = (group) => {
-  const newSchedule = group.schedule;
+const generateRandomNeighbor = (newSchedule) => {
   const numberOfShifts = newSchedule.length;
 
   // Choose two random shifts
@@ -307,8 +316,16 @@ const generateRandomNeighbor = (group) => {
 
   // Swap participants between the two shifts
   const temp = newSchedule[shiftIndex1].participants[participantIndex1];
-  newSchedule[shiftIndex1].participants[participantIndex1] = newSchedule[shiftIndex2].participants[participantIndex2];
-  newSchedule[shiftIndex2].participants[participantIndex2] = temp;
+
+  if (newSchedule[shiftIndex2].participants.length < (newSchedule[shiftIndex2].config.maxParticipants - 1)
+    && newSchedule[shiftIndex1].participants.length > (newSchedule[shiftIndex1].config.minParticipants + 1)
+  ) {
+    newSchedule[shiftIndex2].participants.push(temp);
+    newSchedule[shiftIndex1].participants.splice(participantIndex1, 1);
+  } else {
+    newSchedule[shiftIndex1].participants[participantIndex1] = newSchedule[shiftIndex2].participants[participantIndex2];
+    newSchedule[shiftIndex2].participants[participantIndex2] = temp;
+  }
 
   return newSchedule;
 };
@@ -350,25 +367,22 @@ const generateInitialSchedule = (group, participants, shifts) => {
     initialSchedule.push(shift);
   });
 
+  const shiftsPerParticipant = (eachDayOfInterval({
+    start: new Date(group.startDate),
+    end: new Date(group.endDate)
+  }).length * group.numberOfShiftsPerDay) - group.numberOfOffDays;
+
   // Assign participants to shifts
   participants.forEach(participant => {
     let assignedShifts = 0;
-    initialSchedule.forEach((currentShift, index) => {
-      // Check if the participant can be assigned to the shift based on the constraints
-      if (
-        checkArrivalDepartureAbsences(participant, currentShift) &&
-        checkMinTimeBetweenShifts(participant, currentShift, group.config.minNumberOfShiftsBetween) &&
-        checkEnemies(participant, currentShift) &&
-        checkParticipantsPerShift(currentShift)
-      ) {
-        initialSchedule[index].participants.push(participant);
+    while (assignedShifts < shiftsPerParticipant) {
+      const randomShift = Math.floor(Math.random() * initialSchedule.length);
+      if (initialSchedule[randomShift].participants.length < initialSchedule[randomShift].config.maxParticipants) {
+        initialSchedule[randomShift].participants.push(participant);
         assignedShifts++;
       }
-      // Stop assigning shifts if the participant has reached the maximum number of shifts per day
-      if (assignedShifts >= groups.numberOfShiftsPerDay) {
-        return;
-      }
-    });
+    }
+    return;
   });
 
   return initialSchedule;

@@ -50,15 +50,16 @@
       <ion-label position="stacked">Min time Between Shifts (Hours)</ion-label>
       <ion-input formControlName="minTimeBetweenShifts" type="number"></ion-input>
     </ion-item>
-    <ion-item>
+    <ion-item formGroupName="ranges">
       <ion-label position="stacked">Participants per Shift</ion-label>
-      <ion-range aria-label="Range with ticks" id="participantsPerShift" formGroupName="participantsPerShift" [dualKnobs]="true" [snaps]="true"
-        [min]="1" [max]="10" [pin]="true"></ion-range>
+      <ion-range aria-label="Range with ticks" id="participantsPerShift" [formControlName]="'participantsPerShift'"
+        [dualKnobs]="true" [snaps]="true" [min]="1" [max]="12" [pin]="true">
+      </ion-range>
     </ion-item>
-    <ion-item>
+    <ion-item formGroupName="ranges">
       <ion-label position="stacked">Supervisors per Shift</ion-label>
-      <ion-range aria-label="Range with ticks" id="supervisorsPerShift" formGroupName="supervisorsPerShift" [dualKnobs]="true" [snaps]="true"
-        [min]="1" [max]="4"></ion-range>
+      <ion-range aria-label="Range with ticks" id="supervisorsPerShift" [formControlName]="'supervisorsPerShift'"
+        [dualKnobs]="true" [snaps]="true" [min]="1" [max]="4" [pin]="true"></ion-range>
     </ion-item>
 
     <!-- Add other config properties -->

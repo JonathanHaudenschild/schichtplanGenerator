@@ -9,7 +9,7 @@
   <app-participants-list [participants]="participants$ | async"
     (participantSelected)="onParticipantSelected($event)"></app-participants-list>
 
-  <ion-button (click)="openParticipantAddModal(true)">Add Participant</ion-button>
+  <ion-button (click)="onParticipantAdd()">Add Participant</ion-button>
 
 </ion-content>
 
@@ -27,7 +27,9 @@
       </ion-toolbar>
     </ion-header>
     <ion-content class="modal-content light-tint-background">
-      <app-participant-add (participantAdded)="onParticipantAdded($event)"></app-participant-add>
+      <app-participants-add [participant]="participant" [isEdit]="editMode"
+        (participantAdded)="onParticipantAdded($event)"
+        (participantEdited)="onParticipantEdited($event)"></app-participants-add>
     </ion-content>
   </ng-template>
 </ion-modal>
