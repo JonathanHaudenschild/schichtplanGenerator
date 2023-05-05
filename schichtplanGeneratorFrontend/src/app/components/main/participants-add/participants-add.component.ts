@@ -17,20 +17,39 @@ export class ParticipantsAddComponent implements OnChanges {
   participantForm: FormGroup;
 
   ngOnChanges(changes: SimpleChanges): void {
-    // Add code to handle changes to participant input if needed
+    if (!changes) {
+      return;
+    }
+    if (changes['participant'].currentValue) {
+
+      this.participantForm.patchValue({
+        participantToken: changes['participant'].currentValue.participantToken,
+        displayName: changes['participant'].currentValue.displayName,
+        color: changes['participant'].currentValue.color,
+        offDays: changes['participant'].currentValue.offDays,
+        friends: changes['participant'].currentValue.friends,
+        enemies: changes['participant'].currentValue.enemies,
+        shiftPreferences: changes['participant'].currentValue.shiftPreferences,
+        experience: changes['participant'].currentValue.experience,
+        arrivalTime: this.getLocalISOString(new Date(changes['participant'].currentValue.arrivalTime)).toISOString(),
+        departureTime: this.getLocalISOString(new Date(changes['participant'].currentValue.departureTime)).toISOString(),
+        absences: changes['participant'].currentValue.absences,
+        role: changes['participant'].currentValue.role,
+      })// Add code to handle changes to participant input if needed
+    }
   }
 
   constructor(private fb: FormBuilder, private modalCtrl: ModalController) {
-    const arrivalTime = roundToNearestMinutes(this.getLocalISOString(new Date(this.participant?.arrivalTime ?? new Date())), { nearestTo: 30, roundingMethod: 'ceil' }).toISOString();
-    const departureTime = roundToNearestMinutes(this.getLocalISOString(new Date(this.participant?.departureTime ?? new Date())), { nearestTo: 30, roundingMethod: 'ceil' }).toISOString();
+    const arrivalTime = roundToNearestMinutes(this.getLocalISOString(new Date()), { nearestTo: 30, roundingMethod: 'ceil' }).toISOString();
+    const departureTime = roundToNearestMinutes(this.getLocalISOString(new Date()), { nearestTo: 30, roundingMethod: 'ceil' }).toISOString();
 
     this.participantForm = this.fb.group({
       participantToken: [this.participant?.participantToken ?? '', Validators.required],
       displayName: [this.participant?.displayName ?? '', Validators.required],
-      color: [this.participant?.color ?? '', Validators.required],
-      offDays: this.fb.array([]), // Add form controls for offDays dynamically
-      friends: this.fb.array([]), // Add form controls for friends dynamically
-      enemies: this.fb.array([]), // Add form controls for enemies dynamically
+      color: [this.participant?.color ?? ''],
+      offDays: [[]], // Add form controls for offDays dynamically
+      friends: [[]], // Add form controls for friends dynamically
+      enemies: [[]], // Add form controls for enemies dynamically
       shiftPreferences: [this.participant?.shiftPreferences ?? 0, Validators.required],
       experience: [this.participant?.experience ?? 0, Validators.required],
       arrivalTime: [arrivalTime, Validators.required],
@@ -81,6 +100,8 @@ export class ParticipantsAddComponent implements OnChanges {
           canSwap: false,
         },
       };
+
+      console.log(this.participantForm.value)
 
       if (!this.isEdit) {
         this.participantAdded.emit(newParticipant);

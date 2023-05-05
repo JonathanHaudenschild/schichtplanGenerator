@@ -1,4 +1,7 @@
+const { isAfter } = require('date-fns');
+const Group = require('../models/groupSchema');
 const Shift = require('../models/shiftSchema');
+const User = require('../models/userSchema');
 
 const initShift = {
   shiftName: '',
@@ -24,7 +27,7 @@ exports.getShifts = async (req, res) => {
   try {
     const { groupId } = req.params;
     const user = await User.findById(req.user.id); // Get the authenticated user's information
-    const group = await Group.findById(groupId).populate('participants');
+    const group = await Group.findById(groupId);
     // check if group is in user's groups
     if (!group) return res.status(404).json({ error: 'Group not found' });
     if (!user.groups.includes(groupId)) {
@@ -45,7 +48,7 @@ exports.createShift = async (req, res) => {
   try {
     const { groupId } = req.params;
     const user = await User.findById(req.user.id); // Get the authenticated user's information
-    const group = await Group.findById(groupId).populate('participants');
+    const group = await Group.findById(groupId).populate('shifts');
     // check if group is in user's groups
     if (!group) return res.status(404).json({ error: 'Group not found' });
     if (!user.groups.includes(groupId)) {
@@ -57,14 +60,18 @@ exports.createShift = async (req, res) => {
       ...initShift, ...req.body, group: groupId
     }
 
-    if (isAfter(newGroupObject.startDate, newGroupObject.endDate)) {
+
+    console.log(newShiftObject)
+    if (isAfter(new Date(newShiftObject.startDate), new Date(newShiftObject.endDate))) {
       return res.status(400).json({ error: 'End date must be after start date' });
     }
 
 
+    console.log(newShiftObject)
     delete newShiftObject._id;
 
     const newShift = new Shift(newShiftObject);
+    
     const shift = await newShift.save();
     group.shifts.push(shift._id);
     await group.save();

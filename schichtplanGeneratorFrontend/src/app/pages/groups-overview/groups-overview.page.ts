@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { Observable, firstValueFrom, map, tap } from 'rxjs';
-import { Participant } from 'src/app/store/schedule/schedule.model';
-import { Store } from '@ngrx/store';
-import { selectAllParticipants } from 'src/app/store/schedule/schedule.selectors';
-import { createParticipant, getGroupById, getParticipants, selectGroup, selectParticipant, updateParticipant } from 'src/app/store/schedule/schedule.actions';
+import { NavController } from '@ionic/angular';
 import { RouterReducerState } from '@ngrx/router-store';
+import { Store } from '@ngrx/store';
+import { firstValueFrom, map, tap } from 'rxjs';
 import { selectRouteParams } from 'src/app/store/router/router.selector';
+import { getGroupById } from 'src/app/store/schedule/schedule.actions';
+
 
 @Component({
   selector: 'app-groups-overview',
@@ -13,50 +13,31 @@ import { selectRouteParams } from 'src/app/store/router/router.selector';
   styleUrls: ['./groups-overview.page.scss'],
 })
 export class GroupsOverviewPage implements OnInit {
-  participants$: Observable<Participant[]> = this.store.select(selectAllParticipants);
-  public isOpenParticipantModal = false;
-  public participant: Participant | null = null;
-  public editMode = false;
-  constructor(private store: Store,
-    private routerStore: Store<RouterReducerState>,) { }
+  private groupId: number = 0;
+  async ionViewWillEnter() {
+    this.groupId = await firstValueFrom(this.routerStore.select(selectRouteParams).pipe(
+      tap((params) => console.log(params)),
+      map((params) =>
+        params['groupId'])))
+
+    this.store.dispatch(getGroupById({
+      groupId: this.groupId
+    })
+    )
+  }
+  constructor(
+    private store: Store,
+    private routerStore: Store<RouterReducerState>,
+    private navCtrl: NavController) { }
 
   ngOnInit() {
   }
 
-  async ionViewWillEnter() {
-    this.store.dispatch(getGroupById({
-      groupId: await firstValueFrom(this.routerStore.select(selectRouteParams).pipe(
-        tap((params) => console.log(params)),
-        map((params) =>
-          params['groupId'])))
-    })
-    )
+  goToParticipantsPage() {
+    this.navCtrl.navigateForward(`/groups/${this.groupId}/participants`);
   }
 
-  onParticipantAdd() {
-    this.participant = null;
-    this.editMode = false;
-    this.openParticipantAddModal(true);
+  goToShiftsPage() {
+    this.navCtrl.navigateForward(`/groups/${this.groupId}/shifts`);
   }
-
-  onParticipantEdited(participant: Participant) {
-    console.log(participant);
-    this.store.dispatch(updateParticipant({ participant }));
-  }
-
-
-  onParticipantAdded(participant: Participant) {
-    console.log(participant);
-    this.store.dispatch(createParticipant({ participant }));
-  }
-
-  onParticipantSelected(participant: Participant) {
-    console.log(participant);
-    this.store.dispatch(selectParticipant({ participant }));
-  }
-
-  openParticipantAddModal(show: boolean): void {
-    this.isOpenParticipantModal = show;
-  }
-
 }

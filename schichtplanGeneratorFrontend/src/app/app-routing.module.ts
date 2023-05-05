@@ -16,11 +16,11 @@ const routes: Routes = [
     loadChildren: () => import('./pages/groups/groups.module').then(m => m.GroupsPageModule)
   },
   {
-    path: 'participants',
+    path: 'groups/:groupId/participants',
     loadChildren: () => import('./pages/participants/participants.module').then(m => m.ParticipantsPageModule)
   },
   {
-    path: 'shifts',
+    path: 'groups/:groupId/shifts',
     loadChildren: () => import('./pages/shifts/shifts.module').then(m => m.ShiftsPageModule)
   },
   {

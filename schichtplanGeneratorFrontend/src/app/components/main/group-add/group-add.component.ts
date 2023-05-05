@@ -49,9 +49,7 @@ export class GroupAddComponent implements OnChanges {
 
 
   constructor(private fb: FormBuilder, private modalCtrl: ModalController) {
-    const currentDate = new Date();
     const startDate = roundToNearestMinutes(this.getLocalISOString(new Date()), { nearestTo: 15, roundingMethod: 'ceil' }).toISOString();
-
     const endDate = roundToNearestMinutes(this.getLocalISOString(new Date()), { nearestTo: 15, roundingMethod: 'ceil' }).toISOString();
     this.groupForm = this.fb.group({
       groupName: [this.group?.groupName ?? '', Validators.required],

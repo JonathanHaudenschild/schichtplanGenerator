@@ -1,20 +1,44 @@
 <form [formGroup]="participantForm" (ngSubmit)="onSubmit()">
-  <!-- Participant Token -->
-  <ion-item>
-    <ion-label position="stacked">Participant Token</ion-label>
-    <ion-input formControlName="participantToken" type="text" required></ion-input>
-  </ion-item>
-
   <!-- Display Name -->
   <ion-item>
     <ion-label position="stacked">Display Name</ion-label>
     <ion-input formControlName="displayName" type="text" required></ion-input>
   </ion-item>
 
+  <!-- Participant Token -->
+  <ion-item>
+    <ion-label position="stacked">Participant Token</ion-label>
+    <ion-input formControlName="participantToken" type="text" required></ion-input>
+  </ion-item>
+
   <!-- Color -->
   <ion-item>
     <ion-label position="stacked">Color</ion-label>
-    <ion-input formControlName="color" type="color" required></ion-input>
+    <ion-input formControlName="color" type="color"></ion-input>
+  </ion-item>
+
+  <!-- Arrival Time -->
+  <ion-item>
+    <ion-label position="stacked">Arrival Time</ion-label>
+    <ion-datetime-button datetime="arrivalTime"></ion-datetime-button>
+    <ion-modal [keepContentsMounted]="true">
+      <ng-template>
+        <ion-datetime id="arrivalTime" formControlName="arrivalTime" displayFormat="h A"
+          pickerFormat="h A"></ion-datetime>
+      </ng-template>
+    </ion-modal>
+  </ion-item>
+
+  <!-- Departure Time -->
+  <ion-item>
+    <ion-label position="stacked">Departure Time</ion-label>
+    <ion-datetime-button datetime="departureTime"></ion-datetime-button>
+    <ion-modal [keepContentsMounted]="true">
+      <ng-template>
+        <ion-datetime id="departureTime" formControlName="departureTime" displayFormat="h A"
+          pickerFormat="h A"></ion-datetime>
+      </ng-template>
+    </ion-modal>
   </ion-item>
 
   <!-- Off Days -->
@@ -52,29 +76,6 @@
     <ion-input formControlName="experience" type="number"></ion-input>
   </ion-item>
 
-  <!-- Arrival Time -->
-  <ion-item>
-    <ion-label position="stacked">Arrival Time</ion-label>
-    <ion-datetime-button datetime="arrivalTime"></ion-datetime-button>
-    <ion-modal [keepContentsMounted]="true">
-      <ng-template>
-        <ion-datetime id="arrivalTime" formControlName="arrivalTime" displayFormat="h A"
-          pickerFormat="h A"></ion-datetime>
-      </ng-template>
-    </ion-modal>
-  </ion-item>
-
-  <!-- Departure Time -->
-  <ion-item>
-    <ion-label position="stacked">Departure Time</ion-label>
-    <ion-datetime-button datetime="departureTime"></ion-datetime-button>
-    <ion-modal [keepContentsMounted]="true">
-      <ng-template>
-        <ion-datetime id="departureTime" formControlName="departureTime" displayFormat="h A"
-          pickerFormat="h A"></ion-datetime>
-      </ng-template>
-    </ion-modal>
-  </ion-item>
 
   <!-- Absences -->
   <div formArrayName="absences">
@@ -101,7 +102,7 @@
     <ion-select formControlName="role">
       <ion-select-option value="1">Role 1</ion-select-option>
       <ion-select-option value="2">Role 2</ion-select-option>
-      <!-- Add more roles -->
+      Add more roles
     </ion-select>
   </ion-item>
 

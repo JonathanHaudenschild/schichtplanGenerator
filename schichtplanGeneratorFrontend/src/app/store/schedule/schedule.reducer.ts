@@ -155,6 +155,9 @@ export const scheduleReducer = createReducer(
     on(schedule.getShiftByIdSuccess, (state: ScheduleState, { shift }) => {
         return { ...state, shifts: shiftsAdapter.upsertOne(shift, state.shifts) };
     }),
+    on(schedule.selectShift, schedule.getShiftByIdSuccess, (state: ScheduleState, { shift }) => {
+        return { ...state, shifts: { ...state.shifts, selectedShiftId: shift._id } };
+    }),
     on(schedule.getGeneratedShiftsSuccess, (state: ScheduleState, { generatedShifts }) => {
         return { ...state, generatedShifts: generatedShiftsAdapter.setAll(generatedShifts, state.generatedShifts) };
     }),

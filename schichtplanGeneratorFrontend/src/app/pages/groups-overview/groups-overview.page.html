@@ -1,35 +1,13 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>Scchicht</ion-title>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/groups"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Navigation</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding">
-
-  <app-participants-list [participants]="participants$ | async"
-    (participantSelected)="onParticipantSelected($event)"></app-participants-list>
-
-  <ion-button (click)="onParticipantAdd()">Add Participant</ion-button>
-
+<ion-content>
+  <ion-button expand="block" (click)="goToParticipantsPage()">Go to Participants Page</ion-button>
+  <ion-button expand="block" (click)="goToShiftsPage()">Go to Shifts Page</ion-button>
 </ion-content>
-
-<ion-modal class="modal-fullscreen" [isOpen]="isOpenParticipantModal" (didDismiss)="openParticipantAddModal(false)">
-  <ng-template>
-    <ion-header class="modal-header ion-no-border">
-      <ion-toolbar>
-        <ion-title slot="start">
-        </ion-title>
-        <ion-buttons slot="end">
-          <ion-button (click)="openParticipantAddModal(false)">
-            <ion-icon slot="icon-only" name="close"></ion-icon>
-          </ion-button>
-        </ion-buttons>
-      </ion-toolbar>
-    </ion-header>
-    <ion-content class="modal-content light-tint-background">
-      <app-participants-add [participant]="participant" [isEdit]="editMode"
-        (participantAdded)="onParticipantAdded($event)"
-        (participantEdited)="onParticipantEdited($event)"></app-participants-add>
-    </ion-content>
-  </ng-template>
-</ion-modal>

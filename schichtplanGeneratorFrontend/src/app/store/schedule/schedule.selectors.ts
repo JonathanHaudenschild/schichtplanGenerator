@@ -1,6 +1,6 @@
 import { createFeatureSelector, createSelector } from "@ngrx/store";
 import { GroupsState, Participant, ParticipantsState, ScheduleState } from "./schedule.model";
-import { groupsAdapter, participantsAdapter } from "./schedule.reducer";
+import { groupsAdapter, participantsAdapter, shiftsAdapter } from "./schedule.reducer";
 
 export const selectScheduleState = createFeatureSelector<
     Readonly<ScheduleState>
@@ -33,6 +33,8 @@ export const { selectEntities: selectAllParticipantsEntities } = participantsAda
 export const { selectAll: selectAllGroups } = groupsAdapter.getSelectors(selectGroupsState);
 
 export const { selectEntities: selectAllGroupsEntities } = groupsAdapter.getSelectors(selectGroupsState);
+
+export const { selectAll: selectAllShifts } = shiftsAdapter.getSelectors(selectShiftsState)
 
 export const selectSelectedGroupId = createSelector(
     selectGroupsState,

@@ -35,7 +35,7 @@ export class ShiftApiService {
         'Cache-Control': 'no-cache',
         'x-auth-token': this.authService.getToken()
       },
-      body: JSON.stringify(shiftData)
+      data: shiftData
     };
     return from(getData(Http.post(options)));
   }
@@ -62,7 +62,7 @@ export class ShiftApiService {
         'Cache-Control': 'no-cache',
         'x-auth-token': this.authService.getToken()
       },
-      body: JSON.stringify(shiftData)
+      data: shiftData
     };
     return from(getData(Http.put(options)));
   }

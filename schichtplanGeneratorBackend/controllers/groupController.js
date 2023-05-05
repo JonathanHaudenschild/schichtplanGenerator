@@ -152,24 +152,26 @@ exports.generateShifts = async (req, res) => {
 
 // Helper functions
 const checkArrivalDepartureAbsences = (participant, currentShift) => {
-  const arrivalTime = participant.arrivalTime;
-  const departureTime = participant.departureTime;
-  const absences = participant.absences;
+  const arrivalTime = new Date(participant.arrivalTime);
+  const departureTime = new Date(participant.departureTime);
+  const shiftStart = new Date(currentShift.startDate);
+  const shiftEnd = new Date(currentShift.endDate);
+  const absences = new Date(participant.absences);
 
   // Check if the participant's arrivalTime and departureTime allow them to be assigned on the given day
-  if (isBefore(currentShift.endDate, arrivalTime) || isAfter(currentShift.startDate, departureTime)) {
+  if (isBefore(shiftEnd, arrivalTime) || isAfter(shiftStart, departureTime)) {
     return false;
   }
 
   // Check if the participant has an absence on the given day
   for (const absence of absences) {
     if (
-      (isBefore(currentShift.startDate, absence.startDate) && isAfter(currentShift.endDate, absence.startDate)) ||
-      (isBefore(currentShift.startDate, absence.endDate) && isAfter(currentShift.endDate, absence.endDate)) ||
-      (isAfter(currentShift.startDate, absence.startDate) && isBefore(currentShift.startDate, absence.endDate)) ||
-      (isAfter(currentShift.endDate, absence.startDate) && isBefore(currentShift.endDate, absence.endDate)) ||
-      (isAfter(currentShift.startDate, absence.startDate) && isBefore(currentShift.endDate, absence.endDate)) ||
-      (isBefore(currentShift.startDate, absence.startDate) && isAfter(currentShift.endDate, absence.endDate))
+      (isBefore(shiftStart, absence.startDate) && isAfter(shiftEnd, absence.startDate)) ||
+      (isBefore(shiftStart, absence.endDate) && isAfter(shiftEnd, absence.endDate)) ||
+      (isAfter(shiftStart, absence.startDate) && isBefore(shiftStart, absence.endDate)) ||
+      (isAfter(shiftEnd, absence.startDate) && isBefore(shiftEnd, absence.endDate)) ||
+      (isAfter(shiftStart, absence.startDate) && isBefore(shiftEnd, absence.endDate)) ||
+      (isBefore(shiftStart, absence.startDate) && isAfter(shiftEnd, absence.endDate))
     ) {
       return false;
     }
@@ -178,7 +180,7 @@ const checkArrivalDepartureAbsences = (participant, currentShift) => {
 }
 
 const checkMinTimeBetweenShifts = (participant, currentShift, minBreakTimeBetween = 2) => {
-
+  const currentShiftStart = new Date(currentShift.startDate);
   // If there's no last assigned shift, this participant is eligible for a new shift
   if (participant.shifts.length === 0) {
     return true;
@@ -186,18 +188,20 @@ const checkMinTimeBetweenShifts = (participant, currentShift, minBreakTimeBetwee
   const filteredShifts = participant.shifts.filter(shift => shift._id !== currentShift._id);
 
   return filteredShifts.every(shift => {
-    const timeBetweenShifts = differenceInMilliseconds(currentShift.startDate, shift.endDate);
+    const shiftEnd = new Date(shift.endDate);
+    const timeBetweenShifts = differenceInMilliseconds(shiftEnd, currentShiftStart);
     return timeBetweenShifts > minBreakTimeBetween;
   });
 };
 
 const checkOffDays = (participant, currentShift, numberOfOffDays = 1) => {
   const offDays = participant.offDays.slice(0, numberOfOffDays);
-
+  const shiftStart = new Date(currentShift.startDate);
+  const shiftEnd = new Date(currentShift.endDate);
   // Check if the day is not within the participant's desired offDays
   for (const offDay of offDays) {
     const offDayDate = new Date(offDay);
-    if (isSameDay(currentShift.startDate, offDayDate) || isSameDay(currentShift.endDate, offDayDate)) {
+    if (isSameDay(shiftStart, offDayDate) || isSameDay(shiftEnd, offDayDate)) {
       return false;
     }
   }
@@ -267,7 +271,6 @@ const calculateCost = (schedule) => {
   let cost = 0;
   schedule.forEach((currentShift) => {
     currentShift.participants.forEach((participant) => {
-      const day = shift.day;
 
       if (!checkArrivalDepartureAbsences(participant, currentShift)) {
         cost += 5000; // High priority

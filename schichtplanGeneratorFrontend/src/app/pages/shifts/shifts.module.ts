@@ -1,18 +1,13 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-
-import { IonicModule } from '@ionic/angular';
 
 import { ShiftsPageRoutingModule } from './shifts-routing.module';
 
 import { ShiftsPage } from './shifts.page';
+import { MainFeatureModule } from 'src/app/components/main/main-feature.module';
 
 @NgModule({
   imports: [
-    CommonModule,
-    FormsModule,
-    IonicModule,
+    MainFeatureModule,
     ShiftsPageRoutingModule
   ],
   declarations: [ShiftsPage]

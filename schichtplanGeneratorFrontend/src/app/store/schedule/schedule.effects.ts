@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Actions, concatLatestFrom, createEffect, ofType } from '@ngrx/effects';
 import { of } from 'rxjs';
 import { catchError, exhaustMap, map, tap } from 'rxjs/operators';
-import { ErrorAlert, Participant, ScheduleState } from './schedule.model';
+import { ErrorAlert, Participant, ScheduleState, Shift } from './schedule.model';
 import * as ScheduleActions from './schedule.actions';
 import { ParticipantApiService } from 'src/app/services/participant-api.service';
 
@@ -10,11 +10,14 @@ import { Store } from '@ngrx/store';
 import { selectSelectedGroup, selectSelectedGroupId } from './schedule.selectors';
 import { Router } from '@angular/router';
 import { GroupApiService } from 'src/app/services/group-api.service';
+import { ShiftApiService } from 'src/app/services/shift-api.service';
+import { th } from 'date-fns/locale';
 @Injectable()
 export class ScheduleEffects {
     constructor(private actions$: Actions,
         private participantsService: ParticipantApiService,
         private groupsService: GroupApiService,
+        private shiftsService: ShiftApiService,
         private store: Store<ScheduleState>,
         private router: Router
     ) { }
@@ -232,4 +235,90 @@ export class ScheduleEffects {
             )
         )
     );
+
+    getShifts$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(ScheduleActions.getShifts, ScheduleActions.getGroupByIdSuccess),
+            concatLatestFrom(() => this.store.select(selectSelectedGroupId)),
+            exhaustMap(([, groupId]) =>
+                this.shiftsService.getShifts(groupId).pipe(
+                    map((response) => {
+                        const shifts: Shift[] = response.data;
+                        return ScheduleActions.getShiftsSuccess({ shifts });
+                    }),
+                    catchError((error: ErrorAlert) =>
+                        of(ScheduleActions.getShiftsFailure({ errorAlert: error }))
+                    )
+                )
+            )
+        ));
+
+    getShiftById$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(ScheduleActions.getShiftById),
+            concatLatestFrom(() => this.store.select(selectSelectedGroupId)),
+            exhaustMap(([{ shiftId }, groupId]) =>
+                this.shiftsService.getShiftById(groupId, shiftId).pipe(
+                    map((response) => {
+                        const shift: Shift = response.data;
+                        return ScheduleActions.getShiftByIdSuccess({ shift });
+                    }),
+                    catchError((error: ErrorAlert) =>
+                        of(ScheduleActions.getShiftByIdFailure({ errorAlert: error }))
+                    )
+                )
+            )
+        ));
+
+    createShift$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(ScheduleActions.createShift),
+            concatLatestFrom(() => this.store.select(selectSelectedGroupId)),
+            exhaustMap(([{ shift }, groupId]) =>
+                this.shiftsService.createShift(groupId, shift).pipe(
+                    map((response) => {
+                        const shift: Shift = response.data;
+                        return ScheduleActions.createShiftSuccess({ shift });
+                    }),
+                    catchError((error: ErrorAlert) =>
+                        of(ScheduleActions.createShiftFailure({ errorAlert: error }))
+                    )
+                )
+            )
+        ));
+
+    updateShift$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(ScheduleActions.updateShift),
+            concatLatestFrom(() => this.store.select(selectSelectedGroupId)),
+            exhaustMap(([{ shift }, groupId]) =>
+                this.shiftsService.updateShift(groupId, shift._id, shift).pipe(
+                    map((response) => {
+                        const shift: Shift = response.data;
+                        return ScheduleActions.updateShiftSuccess({ shift });
+                    }
+                    ),
+                    catchError((error: ErrorAlert) =>
+                        of(ScheduleActions.updateShiftFailure({ errorAlert: error }))
+                    )
+                )
+            )
+        ));
+
+    deleteShift$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(ScheduleActions.deleteShift),
+            concatLatestFrom(() => this.store.select(selectSelectedGroupId)),
+            exhaustMap(([{ shift }, groupId]) =>
+                this.shiftsService.deleteShift(groupId, shift._id).pipe(
+                    map(() => ScheduleActions.deleteShiftSuccess({ shift })),
+                    catchError((error: ErrorAlert) =>
+                        of(ScheduleActions.deleteShiftFailure({ errorAlert: error }))
+                    )
+                )
+            )
+        ));
+
+
+
 }

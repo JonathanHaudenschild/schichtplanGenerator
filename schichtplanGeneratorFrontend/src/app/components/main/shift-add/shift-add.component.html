@@ -1,3 +1,108 @@
-<p>
-  shift-add works!
-</p>
+<form [formGroup]="shiftForm" (ngSubmit)="onSubmit()">
+  <!-- Shift Name -->
+  <ion-item>
+    <ion-label position="stacked">Shift Name</ion-label>
+    <ion-input formControlName="shiftName" type="text" required></ion-input>
+  </ion-item>
+  <!-- Participants -->
+  <!-- You can use a multi-select dropdown or any other method to select multiple participants -->
+
+  <!-- Start Date -->
+  <ion-item>
+    <ion-label position="stacked">Start Date</ion-label>
+    <ion-datetime-button datetime="startDate"></ion-datetime-button>
+    <ion-modal [keepContentsMounted]="true">
+      <ng-template>
+        <ion-datetime id="startDate" formControlName="startDate" minuteValues="0,30"></ion-datetime>
+      </ng-template>
+    </ion-modal>
+  </ion-item>
+
+  <!-- End Date -->
+  <ion-item>
+    <ion-label position="stacked">End Date</ion-label>
+    <ion-datetime-button datetime="endDate"></ion-datetime-button>
+    <ion-modal [keepContentsMounted]="true">
+      <ng-template>
+        <ion-datetime id="endDate" formControlName="endDate" minuteValues="0,30"></ion-datetime>
+      </ng-template>
+    </ion-modal>
+  </ion-item>
+
+  <!-- Category -->
+  <ion-item>
+    <ion-label position="stacked">Category</ion-label>
+    <ion-select formControlName="category" value="0">
+      <ion-select-option value="0">Normal</ion-select-option>
+      <ion-select-option value="1">Seeseite</ion-select-option>
+      <ion-select-option value="2">Supervision</ion-select-option>
+    </ion-select>
+  </ion-item>
+
+  <!-- Type -->
+  <ion-item>
+    <ion-label position="stacked">Type</ion-label>
+    <ion-select formControlName="type" value="0">
+      <ion-select-option value="0">Normal</ion-select-option>
+      <ion-select-option value="1">Morning</ion-select-option>
+      <ion-select-option value="2">Afternoon</ion-select-option>
+      <ion-select-option value="3">Evening</ion-select-option>
+      <ion-select-option value="4">Night</ion-select-option>
+    </ion-select>
+  </ion-item>
+
+  <!-- Experience Level -->
+  <ion-item>
+    <ion-label position="stacked">Experience Level</ion-label>
+    <ion-select formControlName="experienceLevel" value="0">
+      <ion-select-option value="0">New</ion-select-option>
+      <ion-select-option value="1">1 year</ion-select-option>
+      <ion-select-option value="2">2nd years</ion-select-option>
+      <ion-select-option value="3">3-5 years</ion-select-option>
+      <ion-select-option value="4">5+ years</ion-select-option>
+    </ion-select>
+  </ion-item>
+
+  <!-- Config -->
+  <!-- Config -->
+  <ion-item-group formGroupName="config">
+    <ion-item-divider>
+      <ion-label>Config</ion-label>
+    </ion-item-divider>
+
+    <ion-item>
+      <ion-label>Is Locked</ion-label>
+      <ion-checkbox formControlName="isLocked"></ion-checkbox>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>Disable Swap</ion-label>
+      <ion-checkbox formControlName="disableSwap"></ion-checkbox>
+    </ion-item>
+
+    <!-- Min/Max Participants -->
+    <ion-item>
+      <ion-label position="stacked">Min Participants</ion-label>
+      <ion-input formControlName="minParticipants" type="number"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Max Participants</ion-label>
+      <ion-input formControlName="maxParticipants" type="number"></ion-input>
+    </ion-item>
+
+    <!-- Min/Max Supervisors -->
+    <ion-item>
+      <ion-label position="stacked">Min Supervisors</ion-label>
+      <ion-input formControlName="minSupervisors" type="number"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Max Supervisors</ion-label>
+      <ion-input formControlName="maxSupervisors" type="number"></ion-input>
+    </ion-item>
+
+  </ion-item-group>
+  <!-- Submit button -->
+  <ion-button type="submit" [disabled]="shiftForm.invalid">Add Shift</ion-button>
+</form>

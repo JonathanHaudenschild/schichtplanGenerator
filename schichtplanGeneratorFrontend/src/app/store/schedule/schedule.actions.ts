@@ -109,6 +109,11 @@ export const getShiftByIdFailure = createAction(
     props<{ errorAlert: ErrorAlert }>(),
 );
 
+export const selectShift = createAction(
+    '[Schedule/Shifts]  Select Shift',
+    props<{ shift: Shift }>(),
+);
+
 
 export const createShift = createAction(
     '[Schedule/Shifts]  Create Shift',
