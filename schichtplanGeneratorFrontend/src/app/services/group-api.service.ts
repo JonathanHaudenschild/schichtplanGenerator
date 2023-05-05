@@ -92,6 +92,6 @@ export class GroupApiService {
         'x-auth-token': this.authService.getToken()
       }
     };
-    return from(getData(Http.get(options)));
+    return from(getData(Http.post(options)));
   }
 }

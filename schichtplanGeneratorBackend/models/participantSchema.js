@@ -32,6 +32,12 @@ const participantSchema = new Schema({
         required: true,
     },
     /**
+    * Description of the participant
+    */
+    description: {
+        type: String,
+    },
+    /**
      * The group the participant belongs to
      * @type {Schema.ObjectId}
      */

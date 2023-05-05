@@ -160,6 +160,20 @@ export const deleteShiftFailure = createAction(
     props<{ errorAlert: ErrorAlert }>(),
 );
 
+export const generateShifts = createAction(
+    '[Schedule/Shifts]  Generate Shifts',
+);
+
+export const generateShiftsSuccess = createAction(
+    '[Schedule/Shifts]  Generate Shifts Success',
+    props<{ shifts: Shift[] }>(),
+);
+
+export const generateShiftsFailure = createAction(
+    '[Schedule/Shifts]  Generate Shifts Failure',
+    props<{ errorAlert: ErrorAlert }>(),
+);
+
 export const getGeneratedShifts = createAction(
     '[Schedule/Shifts]  Get Generated Shifts',
 );

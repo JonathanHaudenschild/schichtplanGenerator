@@ -6,6 +6,7 @@ const initParticipant =
 {
   participantToken: '',
   displayName: '',
+  description: '',
   group: null,
   color: '',
   offDays: [],
@@ -67,6 +68,9 @@ exports.createParticipant = async (req, res) => {
     }
     if (req.body.displayName === '') {
       req.body.displayName = getRandomAnimalName();
+    }
+    if (req.body.realName === '') {
+      req.body.realName = req.body.displayName;
     }
 
     if (req.body.color === '') {

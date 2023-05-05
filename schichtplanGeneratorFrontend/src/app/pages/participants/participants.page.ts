@@ -12,6 +12,7 @@ import { selectRouteParams } from 'src/app/store/router/router.selector';
   styleUrls: ['./participants.page.scss'],
 })
 export class ParticipantsPage implements OnInit {
+  public groupId: number = 0;
   participants$: Observable<Participant[]> = this.store.select(selectAllParticipants);
   public isOpenParticipantModal = false;
   public participant: Participant | null = null;
@@ -24,7 +25,15 @@ export class ParticipantsPage implements OnInit {
   }
 
   async ionViewWillEnter() {
-    
+    this.groupId = await firstValueFrom(this.routerStore.select(selectRouteParams).pipe(
+      tap((params) => console.log(params)),
+      map((params) =>
+        params['groupId'])))
+
+    this.store.dispatch(getGroupById({
+      groupId: this.groupId
+    })
+    )
   }
   onParticipantEdit(participant: Participant) {
     this.participant = participant;

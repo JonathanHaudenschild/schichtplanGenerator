@@ -16,6 +16,12 @@ const groupSchema = new Schema({
         unique: true,
     },
     /**
+    * Description of the group
+    */
+    description: {
+        type: String,
+    },
+    /**
      * The participants of the group
      * @type {Array}
      */

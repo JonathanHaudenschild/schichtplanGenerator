@@ -1,32 +1,25 @@
 <ion-grid>
-  <ion-col size="2">
-    <ion-row class="header-row">
-      Shift Name
-    </ion-row>
-    <ion-row class="header-row">
-      End Date
-    </ion-row>
-    <ion-row class="header-row">
-      End Date
-    </ion-row>
-  </ion-col>
-  <ion-col size="2">
-    <ion-row *ngFor="let shift of shifts" (click)="onShiftSelected(shift)">
-      {{ shift.shiftName }}
-      {{ shift.startDate | date:'shortDate' }}
-      {{ shift.endDate | date:'shortDate' }}
+  <ion-row class="header-row">
+    <!-- Add header cells (e.g., days of the week) -->
+    <ion-col *ngFor="let day of getDays()" size="12" size-md="6" size-lg="4">
 
-      {{ shift.category }}
-      {{ shift.type }}
-      {{ shift.experienceLevel }}
-      <ion-buttons>
-        <ion-button size="small" fill="clear" (click)="onEditShift(shift); $event.stopPropagation();">
-          <ion-icon name="create-outline"></ion-icon>
-        </ion-button>
-        <ion-button size="small" fill="clear" (click)="onDeleteShift(shift); $event.stopPropagation();">
-          <ion-icon name="close-outline"></ion-icon>
-        </ion-button>
-      </ion-buttons>
-    </ion-row>
-  </ion-col>
+    </ion-col>
+  </ion-row>
+  <ion-row class="content-row">
+    <ion-col *ngFor="let day of getDays()" size="12" size-md="6" size-lg="4">
+      <ion-list>
+        <ion-list-header> {{ day | date:'shortDate' }}</ion-list-header>
+
+
+        <div *ngFor="let timeSlot of getTimeSlots()">
+          <div class="cell" (click)="onCellClick(day, timeSlot)">
+            <ng-container *ngIf="getShift(day, timeSlot) as shift">
+              <!-- Display shift data here, e.g., shift name -->
+              {{ shift.shiftName }}
+            </ng-container>
+          </div>
+        </div>
+      </ion-list>
+    </ion-col>
+  </ion-row>
 </ion-grid>

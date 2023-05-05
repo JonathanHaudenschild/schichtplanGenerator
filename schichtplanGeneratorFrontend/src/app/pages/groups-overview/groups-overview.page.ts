@@ -4,7 +4,7 @@ import { RouterReducerState } from '@ngrx/router-store';
 import { Store } from '@ngrx/store';
 import { firstValueFrom, map, tap } from 'rxjs';
 import { selectRouteParams } from 'src/app/store/router/router.selector';
-import { getGroupById } from 'src/app/store/schedule/schedule.actions';
+import { generateShifts, getGroupById } from 'src/app/store/schedule/schedule.actions';
 
 
 @Component({
@@ -39,5 +39,8 @@ export class GroupsOverviewPage implements OnInit {
 
   goToShiftsPage() {
     this.navCtrl.navigateForward(`/groups/${this.groupId}/shifts`);
+  }
+  startShiftGeneration() {
+    this.store.dispatch(generateShifts());
   }
 }

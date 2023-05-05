@@ -7,11 +7,12 @@ import * as ScheduleActions from './schedule.actions';
 import { ParticipantApiService } from 'src/app/services/participant-api.service';
 
 import { Store } from '@ngrx/store';
-import { selectSelectedGroup, selectSelectedGroupId } from './schedule.selectors';
+import { selectAllParticipants, selectAllShifts, selectSelectedGroup, selectSelectedGroupId } from './schedule.selectors';
 import { Router } from '@angular/router';
 import { GroupApiService } from 'src/app/services/group-api.service';
 import { ShiftApiService } from 'src/app/services/shift-api.service';
 import { th } from 'date-fns/locale';
+import { ScheduleGeneratorService } from 'src/app/services/schedule-generator.service';
 @Injectable()
 export class ScheduleEffects {
     constructor(private actions$: Actions,
@@ -19,7 +20,8 @@ export class ScheduleEffects {
         private groupsService: GroupApiService,
         private shiftsService: ShiftApiService,
         private store: Store<ScheduleState>,
-        private router: Router
+        private router: Router,
+        private generator: ScheduleGeneratorService
     ) { }
 
     /*
@@ -318,6 +320,34 @@ export class ScheduleEffects {
                 )
             )
         ));
+
+
+    generateShifts$ = createEffect(() =>
+        this.actions$.pipe(
+            ofType(ScheduleActions.generateShifts),
+            concatLatestFrom(() => [this.store.select(selectSelectedGroupId), this.store.select(selectSelectedGroup), this.store.select(selectAllParticipants), this.store.select(selectAllShifts)]),
+            exhaustMap(([, groupId, group, participants, shifts]) => {
+                //     if (!group) return ScheduleActions.generateShiftsFailure({ errorAlert: { message: 'No group selected' } }
+                //     )
+
+                //     console.log('generateShifts', groupId, group, participants, shifts)
+                //     const schedule = await this.generator.generateSchedule(group, participants, shifts)
+                //     return ScheduleActions.generateShiftsSuccess({ shifts: schedule });
+                // }
+                return this.groupsService.generateShifts(groupId).pipe(
+                    map((response) => {
+                        const shifts: Shift[] = response.data;
+                        console.log(shifts)
+                        return ScheduleActions.generateShiftsSuccess({ shifts });
+                    }
+                    ),
+                    catchError((error: ErrorAlert) =>
+                        of(ScheduleActions.generateShiftsFailure({ errorAlert: error }))
+                    )
+                )
+            })
+        ));
+
 
 
 

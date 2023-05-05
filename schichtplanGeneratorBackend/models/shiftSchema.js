@@ -14,6 +14,12 @@ const shiftSchema = new Schema({
         required: true,
     },
     /**
+     * Description of the shift
+     */
+    description: {
+        type: String,
+    },
+    /**
      * The group the shift belongs to
      * @type {Schema.ObjectId}
      */

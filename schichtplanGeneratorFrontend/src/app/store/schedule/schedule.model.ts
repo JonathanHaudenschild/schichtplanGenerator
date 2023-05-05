@@ -16,6 +16,7 @@ export interface ScheduleStatus {
 export interface Shift {
     _id: number,
     shiftName: string,
+    description: string,
     group: Group | null,
     participants: Participant[],
     startDate: Date,
@@ -36,6 +37,7 @@ export interface Shift {
 export interface Group {
     _id: number,
     groupName: string,
+    description: string,
     participants: Participant[],
     shifts: Shift[],
     schedule: Shift[],
@@ -59,12 +61,13 @@ export interface Participant {
     participantToken: string,
     realName: string,
     displayName: string,
+    description: string,
     group: Group | null,
     color: string,
     offDays: Date[],
     friends: string[],
     enemies: string[],
-    shiftPreferences: Number
+    shiftPreferences: number[]
     experience: number,
     arrivalTime: Date,
     departureTime: Date,

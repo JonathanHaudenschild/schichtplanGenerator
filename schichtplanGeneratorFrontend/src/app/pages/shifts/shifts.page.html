@@ -1,7 +1,7 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/third-page"></ion-back-button>
+      <ion-back-button defaultHref="{{'/groups/' + groupId}}"></ion-back-button>
     </ion-buttons>
     <ion-title>Shifts</ion-title>
   </ion-toolbar>
@@ -9,8 +9,8 @@
 
 <ion-content class="ion-padding">
 
-  <app-shifts-overview [shifts]="shifts$ | async" (shiftSelected)="onShiftSelected($event)"
-    (shiftDelete)="onShiftDelete($event)" (shiftEdit)="onShiftEdit($event)"></app-shifts-overview>
+  <app-shifts-overview [group]="group$ | async" [shifts]="shifts$ | async" (shiftSelected)="onShiftSelected($event)"
+    (shiftDelete)="onShiftDelete($event)" (shiftAdd)="onShiftAdd($event)" (shiftEdit)="onShiftEdit($event)"></app-shifts-overview>
 
   <ion-button (click)="onShiftAdd()">Add Shift</ion-button>
 

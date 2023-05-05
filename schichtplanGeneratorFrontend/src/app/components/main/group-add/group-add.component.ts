@@ -92,6 +92,7 @@ export class GroupAddComponent implements OnChanges {
         _id: this.group?._id ?? 0,
         groupName: this.groupForm.value.groupName,
         participants: this.group?.participants ?? [],
+        description: this.group?.description ?? '',
         shifts: this.group?.shifts ?? [],
         schedule: this.group?.schedule ?? [],
         startDate: stDate,

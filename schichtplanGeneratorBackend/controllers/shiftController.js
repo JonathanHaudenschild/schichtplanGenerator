@@ -6,6 +6,7 @@ const User = require('../models/userSchema');
 const initShift = {
   shiftName: '',
   group: null,
+  description: '',
   participants: [],
   startDate: new Date(),
   endDate: new Date(),

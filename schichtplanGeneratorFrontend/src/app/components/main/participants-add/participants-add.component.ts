@@ -80,6 +80,7 @@ export class ParticipantsAddComponent implements OnChanges {
         _id: this.participant?._id ?? 0,
         participantToken: this.participantForm.value.participantToken,
         realName: this.participant?.realName ?? '',
+        description: this.participant?.description ?? '',
         displayName: this.participantForm.value.displayName,
         group: this.participant?.group ?? null,
         color: this.participantForm.value.color,

@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { Observable, firstValueFrom, map, tap } from 'rxjs';
-import { Shift } from 'src/app/store/schedule/schedule.model';
+import { Group, Shift } from 'src/app/store/schedule/schedule.model';
 import { Store } from '@ngrx/store';
-import { selectAllShifts } from 'src/app/store/schedule/schedule.selectors';
-import { createShift, getGroupById, selectShift, updateShift } from 'src/app/store/schedule/schedule.actions';
+import { selectAllShifts, selectSelectedGroup } from 'src/app/store/schedule/schedule.selectors';
+import { createShift, getGroupById, selectGroup, selectShift, updateShift } from 'src/app/store/schedule/schedule.actions';
 import { RouterReducerState } from '@ngrx/router-store';
 import { selectRouteParams } from 'src/app/store/router/router.selector';
 @Component({
@@ -12,11 +12,24 @@ import { selectRouteParams } from 'src/app/store/router/router.selector';
   styleUrls: ['./shifts.page.scss'],
 })
 export class ShiftsPage implements OnInit {
+  public groupId: number = 0;
   shifts$: Observable<Shift[]> = this.store.select(selectAllShifts).pipe(tap((shifts) => console.log(shifts)));
+  group$: Observable<Group | null | undefined> = this.store.select(selectSelectedGroup)
+
   public isOpenShiftModal = false;
   public shift: Shift | null = null;
   public editMode = false;
+  async ionViewWillEnter() {
+    this.groupId = await firstValueFrom(this.routerStore.select(selectRouteParams).pipe(
+      tap((params) => console.log(params)),
+      map((params) =>
+        params['groupId'])))
 
+    this.store.dispatch(getGroupById({
+      groupId: this.groupId
+    })
+    )
+  }
   constructor(private store: Store,
     private routerStore: Store<RouterReducerState>,) { }
 
@@ -30,8 +43,9 @@ export class ShiftsPage implements OnInit {
     this.openShiftAddModal(true);
   }
 
-  onShiftAdd() {
-    this.shift = null;
+  onShiftAdd(shift?: Shift) {
+    this.shift = shift || null;
+    console.log(shift, this.shift)
     this.editMode = false;
     this.openShiftAddModal(true);
   }

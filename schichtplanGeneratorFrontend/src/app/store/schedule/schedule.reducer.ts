@@ -24,12 +24,13 @@ const initParticipant: Participant =
     participantToken: '',
     realName: '',
     displayName: '',
+    description: '',
     group: null,
     color: '',
     offDays: [],
     friends: [],
     enemies: [],
-    shiftPreferences: 0,
+    shiftPreferences: [],
     experience: 0,
     arrivalTime: new Date(),
     departureTime: new Date(),
@@ -48,6 +49,7 @@ const initShift: Shift = {
     _id: 0,
     shiftName: '',
     group: null,
+    description: '',
     participants: [],
     startDate: new Date(),
     endDate: new Date(),
@@ -67,6 +69,7 @@ const initShift: Shift = {
 const initGroup: Group = {
     _id: 0,
     groupName: '',
+    description: '',
     participants: [],
     shifts: [],
     schedule: [],
@@ -179,6 +182,9 @@ export const scheduleReducer = createReducer(
     }),
     on(schedule.deleteGroupSuccess, (state: ScheduleState, { group }) => {
         return { ...state, groups: groupsAdapter.removeOne(group._id, state.groups) };
+    }),
+    on(schedule.generateShiftsSuccess, (state: ScheduleState, { shifts }) => {
+        return { ...state, generatedShifts: generatedShiftsAdapter.addOne(shifts, state.generatedShifts) };
     }),
 
 );
