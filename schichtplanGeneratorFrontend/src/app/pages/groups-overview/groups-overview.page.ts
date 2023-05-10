@@ -22,10 +22,8 @@ export class GroupsOverviewPage implements OnInit {
 
     this.store.dispatch(getGroupById({
       groupId: this.groupId
-    })
+    }))
 
-    this.store.dispatch(getUser
-    )
   }
   constructor(
     private store: Store,

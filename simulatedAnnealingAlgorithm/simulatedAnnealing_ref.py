@@ -9,7 +9,7 @@ import statistics
 import time
 import concurrent.futures
 from functools import partial
-
+from threading import Lock
 
 
 index_name_list = [
@@ -112,12 +112,12 @@ shift_type_ranking_list = [
 # Update the preference matrix based on the preferences
 # Positive values indicate a preference to work together, and negative values indicate a preference not to work together
 preference_list = [
-    (3, 17, -5),  # Person 0 and person 1 have a preference of 5 to work together
-    (45, 50, -5),
-    (36, 28, -5),
-    (6, 11, -1),
-    (6, 46, -1),
-    (11, 46, -1),
+    (3, 17, -9),  # Person 0 and person 1 have a preference of 5 to work together
+    (45, 50, -9),
+    (36, 28, -9),
+    (6, 11, -6),
+    (6, 46, -6),
+    (11, 46, -6),
     # Add more preferences here
 ]
 
@@ -148,6 +148,12 @@ experience_list = [
     # Add more experience here
 ]
 
+gender_list = [
+    (0, 1),
+    (1, 0),
+    (2, 0),
+]
+
 # Update the unavailability matrix based on the unavailability data
 unavailability_list = [
     (0, (2, 3)),  # Person 0 is unavailable for shifts 2
@@ -161,8 +167,69 @@ unavailability_list = [
 
 # Update the off-day matrix based on the off-day data
 offDay_list= [
-    (0, (2, 3)),  # Person 0 is unavailable for shift 2
-    (1, (3, 5)),  # Person 1 is unavailable for shift 4
+    (0, (0, 1, 2, 3)),  # Person 0 is unavailable for shift 2
+    (1, (4, 5, 6, 7)),  # Person 1 is unavailable for shift 4
+    (3, (4, 5, 6, 7)),
+    (4, (4, 5, 6, 7)),
+    (5, (4, 5, 6, 7)),
+    (6, (4, 5, 6, 7)),
+    (7, (4, 5, 6, 7)),
+    (8, (8, 9, 10, 11)),
+    (9, (8, 9, 10, 11)),
+    (10, (8, 9, 10, 11)),
+    (11, (8, 9, 10, 11)),
+    (12, (8, 9, 10, 11)),
+    (13, (8, 9, 10, 11)),
+    (14, (8, 9, 10, 11)),
+    (15, (8, 9, 10, 11)),
+    (16, (8, 9, 10, 11)),
+    (17, (12,13, 14,15)),
+    (18, (12,13, 14,15)),
+    (19, (12,13, 14,15)),
+    (20, (12,13, 14,15)),
+    (21, (12,13, 14,15)),
+    (22, (12,13, 14,15)),
+    (23, (12,13, 14,15)),
+    (24, (12,13, 14,15)),
+    (25, (12,13, 14,15)),
+    (26, (12,13, 14,15)),
+    (27, (16, 17, 18, 19)),
+    (28, (16, 17, 18, 19)),
+    (29, (16, 17, 18, 19)),
+    (30, (16, 17, 18, 19)),
+    (31, (16, 17, 18, 19)),
+    (32, (16, 17, 18, 19)),
+    (33, (16, 17, 18, 19)),
+    (34, (16, 17, 18, 19)),
+    (35, (16, 17, 18, 19)),
+    (36, (16, 17, 18, 19)),
+    (37, (16, 17, 18, 19)),
+    (38, (16, 17, 18, 19)),
+    (39, (16, 17, 18, 19)),
+    (40, (16, 17, 18, 19)),
+    (41, (16, 17, 18, 19)),
+    (42, (16, 17, 18, 19)),
+    (43, (16, 17, 18, 19)),
+    (44, (16, 17, 18, 19)),
+    (45, (16, 17, 18, 19)),
+    (46, (16, 17, 18, 19)),
+    (47, (16, 17, 18, 19)),
+    (48, (16, 17, 18, 19)),
+    (49, (16, 17, 18, 19)),
+    (50, (16, 17, 18, 19)),
+    (51, (16, 17, 18, 19)),
+    (52, (20, 21, 22, 23)),
+    (53, (20, 21, 22, 23)),
+    (54, (20, 21, 22, 23)),
+    (55, (20, 21, 22, 23)),
+    (56, (20, 21, 22, 23)),
+    (57, (20, 21, 22, 23)),
+    (58, (20, 21, 22, 23)),
+    (59, (20, 21, 22, 23)),
+    (60, (20, 21, 22, 23)),
+    (61, (20, 21, 22, 23)),
+
+
     # Add more unavailability data here
 ]
 
@@ -179,45 +246,38 @@ shift_type_list= [
     (9, 1),  # Shift 4 is a check-in shift
 ]
 
-# Update the off-day matrix based on the off-day data
-mandatory_shifts_list= [
-    (8, 9, 10, 11),
-    (12, 13, 14, 15),
-    (16, 17, 18, 19, 20)
-]
-
 shift_capacity_list= [
     # 27.06.2023
-    (0, (12, 13)),  # Shift 0 has a minimum capacity of 10 and a maximum capacity of 11
-    (1, (17, 18)),  # Shift 1 has a minimum capacity of 10 and a maximum capacity of 11
+    (0, (12, 13)),  
+    (1, (17, 18)), 
     # 28.06.2023
-    (2, (17, 18)),  # Shift 2 has a minimum capacity of 10 and a maximum capacity of 11
-    (3, (17, 19)),  # Shift 3 has a miDnimum capacity of 10 and a maximum capacity of 11
-    (4, (17, 18)),  # Shift 4 has a minimum capacity of 10 and a maximum capacity of 11
-    (5, (16, 18)),  # Shift 5 has a minimum capacity of 10 and a maximum capacity of 11
+    (2, (17, 18)),  
+    (3, (17, 19)), 
+    (4, (17, 18)),  
+    (5, (16, 18)), 
     # 29.06.2023
-    (6, (12, 14)),  # Shift 6 has a minimum capacity of 10 and a maximum capacity of 11
-    (7, (15, 17)),  # Shift 7 has a minimum capacity of 10 and a maximum capacity of 11
-    (8, (15, 17)),  # Shift 8 has a minimum capacity of 10 and a maximum capacity of 11
-    (9, (14, 16)),  # Shift 9 has a minimum capacity of 10 and a maximum capacity of 11
+    (6, (12, 14)),  
+    (7, (15, 17)), 
+    (8, (15, 17)),  
+    (9, (14, 16)),  
     # 30.06.2023
-    (10, (10, 11)),  # Shift 10 has a minimum capacity of 10 and a maximum capacity of 11
-    (11, (13, 15)),  # Shift 11 has a minimum capacity of 10 and a maximum capacity of 11
-    (12, (13, 15)),  # Shift 12 has a minimum capacity of 10 and a maximum capacity of 11
-    (13, (11, 12)),  # Shift 13 has a minimum capacity of 10 and a maximum capacity of 11
+    (10, (10, 11)),  
+    (11, (13, 15)),  
+    (12, (13, 15)), 
+    (13, (11, 12)), 
     # 01.07.2023
-    (14, (8, 10)),  # Shift 14 has a minimum capacity of 10 and a maximum capacity of 11D
-    (15, (11, 12)),  # Shift 15 has a minimum capacity of 10 and a maximum capacity of 11
-    (16, (11, 14)),  # Shift 16 has a minimum capacity of 10 and a maximum capacity of 11
-    (17, (11, 14)),  # Shift 17 has a minimum capacity of 10 and a maximum capacity of 11
+    (14, (8, 10)), 
+    (15, (11, 12)), 
+    (16, (11, 14)), 
+    (17, (11, 14)),  
     # 02.07.2023    
-    (18, (9, 10)),  # Shift 18 has a minimum capacity of 10 and a maximum capacity of 11
-    (19, (11, 12)),  # Shift 19 has a minimum capacity of 10 and a maximum capacity of 11
-    (20, (11, 12)),  # Shift 20 has a minimum capacity of 10 and a maximum capacity of 11
-    (21, (10, 11)),  # Shift 21 has a minimum capacity of 10 and a maximum capacity of 11
+    (18, (9, 10)),
+    (19, (11, 12)),
+    (20, (11, 12)), 
+    (21, (10, 11)), 
     # 03.07.2023
-    (22, (5, 7)),  # Shift 22 has a minimum capacity of 10 and a maximum capacity of 11
-    (23, (7, 8)),   # Shift 23 has a minimum capacity of 10 and a maximum capacity of 11
+    (22, (5, 7)),
+    (23, (7, 8)),  
 ]
 
 person_capacity_list   = [
@@ -246,6 +306,7 @@ num_of_shift_types = len(shift_name_list)
 
 initial_temperature = 1000
 cooling_rate = 0.9999
+s_print_lock = Lock()
 
 def generate_initial_solution(x, y):
     solution = [set() for _ in range(x)]
@@ -332,8 +393,7 @@ def run_parallel_simulated_annealing(num_instances, *args, **kwargs):
             best_solutions.append(result)
         
     best_solutions.sort(key=lambda x: x[1])
-
-    return best_solutions[0][0], best_solutions[0][1]
+    return best_solutions[0][0], best_solutions[0][1], best_solutions[0][2]
 
 
 def simulated_annealing(x, y, initial_temperature, cooling_rate, max_iterations_without_improvement, seed=None):
@@ -367,9 +427,10 @@ def simulated_annealing(x, y, initial_temperature, cooling_rate, max_iterations_
 
         temperature *= cooling_rate
         current_iteration += 1
-        showProgressIndicator(current_iteration, total_iterations, start_time, new_cost, init_cost)
+        if(current_iteration % 333 == 0):
+            showProgressIndicator(current_iteration, total_iterations, start_time, new_cost, init_cost)
 
-    return current_solution, current_cost
+    return current_solution, current_cost, init_cost
 
 def create_ranking_array(shift_ranking_list, shift_type_ranking_list):
     cost_array = [0] * num_of_shifts
@@ -379,7 +440,7 @@ def create_ranking_array(shift_ranking_list, shift_type_ranking_list):
             # Check if this shift_index matches a shift type
             for type_cost, shift in shift_type_ranking_list:
                 if shift_index % num_of_shift_types == shift:  # Assuming there are 4 shift types
-                    cost_array[shift_index] =  math.sqrt(type_cost * cost)
+                    cost_array[shift_index] = type_cost * cost
     return cost_array
 
 def create_preference_matrix(preference_list):
@@ -406,6 +467,12 @@ def create_experience_array(experience_list):
     for experience in experience_list:
         experience_array[experience[0]] = experience[1]
     return experience_array
+
+def create_gender_array(gender_list):
+    gender_array = [0] * num_people
+    for gender in gender_list:
+        gender_array[gender[0]] = gender[1]
+    return gender_array
 
 def create_shift_type_array(shift_type_list):
     shift_type_array = [0] * num_of_shifts
@@ -439,140 +506,13 @@ def cost_function(solution):
     # # Calculate preference-based cost
     pref_cost = preference_cost(solution, create_preference_matrix(preference_list))
     exp_cost = mixedExperience_cost(solution, create_experience_array(experience_list))
-
-    # cons_cost = consecutive_shifts_cost(solution)
-    # # Calculate off-day-based cost
     oday_cost = offDay_cost(solution, create_unavailability_matrix(offDay_list))
-    # unavail_cost = unavailability_cost(solution, create_unavailability_matrix(unavailability_list))
-    # man_cost = mandatory_shifts_cost(solution, mandatory_shifts_list)
-
-    ran_cost = shift_ranking_cost(solution, create_ranking_array(shift_ranking_list, shift_type_ranking_list),  create_preferred_shift_matrix(preferred_shift_list))
-
-    # tim_cost = time_between_cost(solution)
-
-    # pref_shift_cost = preferred_shift_cost(solution, create_preferred_shift_matrix(preferred_shift_list))
-    # shift_dist_cost = shift_distribution_cost(solution)
+    ran_cost = shift_ranking_cost(solution, create_ranking_array(shift_ranking_list, shift_type_ranking_list),  create_preferred_shift_matrix(preferred_shift_list), create_unavailability_matrix(offDay_list))
     shift_type_cost = shift_type_com_cost(solution, create_shift_type_array(shift_type_list), create_preferred_shift_type_array(preferred_shift_type_list))
+    gender_cost = mixedGender_cost(solution, create_gender_array(gender_list))
     # Add other cost components if necessary
-    total_cost = pref_cost + exp_cost + oday_cost + shift_type_cost + ran_cost
+    total_cost = pref_cost + exp_cost + shift_type_cost + ran_cost + oday_cost #+ gender_cost
     return total_cost 
-
-def shift_ranking_cost(solution, ranking_array, personal_pref_matrix):
-    cost_and_shift_types = [{'cost': 0, 'shift_types': set()} for _ in range(num_people)]
-
-    for shift_index, shift in enumerate(solution):
-        for person in shift:
-            shift_type = shift_index % num_of_shift_types
-            if shift_type in cost_and_shift_types[person]['shift_types']:
-                cost = (ranking_array[shift_index] + personal_pref_matrix[person][shift_type]) * 2
-            else:
-                cost = ranking_array[shift_index] + personal_pref_matrix[person][shift_type]
-
-            cost_and_shift_types[person]['cost'] += cost
-            cost_and_shift_types[person]['shift_types'].add(shift_type)
-
-    cost_per_person_array = [person_data['cost'] for person_data in cost_and_shift_types]
-    deviation = statistics.stdev(cost_per_person_array)
-    mean = statistics.mean(cost_per_person_array)
-    # print("Ranking cost: ", deviation, mean, end='\r')
-    return deviation * mean
-
-def shift_type_com_cost(solution, shift_type_array, pref_shift_type_array):
-    total_cost = 0
-    for shift_index, shift in enumerate(solution):
-        for person in shift:
-            if shift_type_array[shift_index] != pref_shift_type_array[person]:
-                total_cost += 3
-    return total_cost
-
-### Unused
-def mandatory_shifts_cost(solution, mandatory_shifts_list):
-    total_cost = 0
-    for person in range(num_people):
-        person_shift_count = 0
-        for shift_index, shift in enumerate(solution):
-            if person in shift:
-                for mandatory_shifts in mandatory_shifts_list:
-                    if shift_index in mandatory_shifts:
-                        person_shift_count += 1
-                        break  # Exit the inner for-loop once a mandatory shift is found
-        if person_shift_count < 2:
-            total_cost += 1
-        if person_shift_count > 2:
-            total_cost += 2
-    return total_cost
-
-### Unused
-def time_between_cost(solution):
-    total_cost = 0
-    for person in range(num_people):
-        old_index = 0
-        for shift_index, shift in enumerate(solution):
-            if person in shift:
-                if old_index != 0:
-                    if shift_index - old_index != 4:
-                        total_cost += 3
-                    old_index = shift_index
-    return total_cost
-
-
-def mixedExperience_cost(solution, experience_array):
-    total_cost = 0
-    for shift_index, shift in enumerate(solution):
-        total_experience = 0
-        for person in shift:
-            total_experience += experience_array[person]
-        if total_experience < 5:
-            total_cost += 5
-    return total_cost 
-
-### Unused
-def preferred_shift_cost(solution, preferred_shift_matrix):
-    total_cost = 0
-    for shift_index, shift in enumerate(solution):
-        for person in shift:
-            total_cost += preferred_shift_matrix[person][shift_index % num_of_shift_types] 
-    return total_cost
-
-
-### Unused
-def shift_distribution_cost(solution):
-    total_cost = 0
-    shift_types = [set() for _ in range(num_people)]
-    
-    for shift_index, shift in enumerate(solution):
-        for person in shift:
-            shift_type = shift_index % num_of_shift_types
-            if shift_type not in shift_types[person]:
-                shift_types[person].add(shift_type)
-                total_cost -= 0.25
-                
-    return total_cost
-
-
-def offDay_cost(solution, unavailability_matrix):
-    total_cost = 0
-    for shift_index, shift in enumerate(solution):
-        for person in shift:
-            if unavailability_matrix[person][shift_index]:
-                total_cost += 10  # Penalize the cases when a person is assigned to an unavailable shift
-    return total_cost
-
-
-### Unused
-def unavailability_cost(solution, unavailability_matrix):
-    total_cost = 0
-    for shift_index, shift in enumerate(solution):
-        for person in shift:
-            if unavailability_matrix[person][shift_index]:
-                total_cost += 10  # Penalize the cases when a person is assigned to an unavailable shift
-    return total_cost
-
-def unavailability(shift_index, unavailability_matrix, person):
-        if unavailability_matrix[person][shift_index]:
-            return 1  # Penalize the cases when a person is assigned to an unavailable shift
-        return 0
-
 
 def preference_cost(solution, preference_matrix):
     total_cost = 0
@@ -583,32 +523,71 @@ def preference_cost(solution, preference_matrix):
                     total_cost += preference_matrix[person1][person2]
     return total_cost
 
-# unused
-# 
-def are_shifts_filled_evenly_cost(solution):
-    shift_proportions = []
-    total_cost = 0
+def shift_ranking_cost(solution, ranking_array, personal_pref_matrix, unavailability_matrix):
+    cost_and_shift_types = [{'cost': 0, 'shift_types': set()} for _ in range(num_people)]
+
     for shift_index, shift in enumerate(solution):
-        assigned_people = len(shift)
-        max_capacity = create_shift_capacity_matrix(shift_capacity_list)[1][shift_index]
-        proportion = assigned_people / max_capacity
-        shift_proportions.append(proportion)
+        for person in shift:
+            shift_type = shift_index % num_of_shift_types
+            cost = 0
+            if unavailability_matrix[person][shift_index]:
+                cost += 36
+            if shift_type in cost_and_shift_types[person]['shift_types']:
+                cost += (ranking_array[shift_index] + personal_pref_matrix[person][shift_type]) * 2
+            else:
+                cost += ranking_array[shift_index] + personal_pref_matrix[person][shift_type]
 
-    min_proportion = min(shift_proportions)
-    max_proportion = max(shift_proportions)
+            cost_and_shift_types[person]['cost'] += cost
+            cost_and_shift_types[person]['shift_types'].add(shift_type)
 
-    # You can adjust the threshold value (e.g., 0.1) based on the desired level of evenness
-    if max_proportion - min_proportion > 0.2:
-        total_cost += 10
+    cost_per_person_array = [person_data['cost'] for person_data in cost_and_shift_types]
+    deviation = statistics.stdev(cost_per_person_array)
+    mean = statistics.mean(cost_per_person_array)
+    return deviation * mean
 
-    return total_cost
-
-def consecutive_shifts_cost(solution):
+def shift_type_com_cost(solution, shift_type_array, pref_shift_type_array):
     total_cost = 0
     for shift_index, shift in enumerate(solution):
         for person in shift:
-            total_cost += consecutive_shifts(solution, shift_index, person)
+            if shift_type_array[shift_index] != pref_shift_type_array[person]:
+                total_cost += 5
     return total_cost
+
+
+def mixedExperience_cost(solution, experience_array):
+    total_cost = 0
+    for shift_index, shift in enumerate(solution):
+        total_experience = 0
+        for person in shift:
+            total_experience += experience_array[person]
+        if total_experience < 5:
+            total_cost += 10
+    return total_cost 
+
+def mixedGender_cost(solution, gender_array):
+    total_cost = 0
+    for shift_index, shift in enumerate(solution):
+        gender_mix = 0
+        for person in shift:
+            gender_mix += gender_array[person]
+        if gender_mix < 4:
+            total_cost += 5
+    return total_cost 
+
+def offDay_cost(solution, unavailability_matrix):
+    total_cost = 0
+    for shift_index, shift in enumerate(solution):
+        for person in shift:
+            if unavailability_matrix[person][shift_index]:
+                total_cost += 3  # Penalize the cases when a person is assigned to an unavailable shift
+    return total_cost
+
+def unavailability(shift_index, unavailability_matrix, person):
+        if unavailability_matrix[person][shift_index]:
+            return 1  # Penalize the cases when a person is assigned to an unavailable shift
+        return 0
+
+
 
 def consecutive_shifts(solution, shift_index, person):
     # Check previous shifts
@@ -646,7 +625,7 @@ def showProgressIndicator(current_iteration, total_iterations, start_time, new_c
     hours, remainder = divmod(remaining_time, 3600)
     minutes, seconds = divmod(remainder, 60)
 
-    print(f"Progress: {progress * 100:.2f}% | Estimated time remaining: {hours:.0f}h {minutes:.0f}m {seconds:.0f}s | {init_cost} Cost Improvement: {round(((new_cost-init_cost)/init_cost)*-100,0)}%  ", end='\r' )
+    print(f"Progress: {progress * 100:.2f}% | Estimated time remaining: {hours:.0f}h {minutes:.0f}m {seconds:.0f}s | Cost Improvement: {round(((init_cost-new_cost)/new_cost)*100,0)}%  ", end='\r' )
 
 def createFile(solution, shift_name_list):
      # Create a new Excel workbook and select the active worksheet
@@ -683,11 +662,13 @@ def createFile(solution, shift_name_list):
 
 if __name__ == "__main__":
 
-    #best_solution, best_cost = run_parallel_simulated_annealing(4)
-    best_solution, best_cost = simulated_annealing(num_of_shifts, num_people, initial_temperature, cooling_rate, max_iterations_without_improvement=1000)
+    best_solution, best_cost, init_cost = run_parallel_simulated_annealing(6)
+    #best_solution, best_cost = simulated_annealing(num_of_shifts, num_people, initial_temperature, cooling_rate, max_iterations_without_improvement=1000)
     best_solution_with_names = replace_numbers_with_names(best_solution, index_name_list) 
-    print(f"Best solution: {best_solution}")
+
+   # print(f"Best solution: {best_solution}")
     print(f"Best solution with names: {best_solution_with_names}")
+    print(f"Initial cost: {init_cost}")
     print(f"Best cost: {best_cost}")
     createFile(best_solution_with_names, shift_name_list)
    
