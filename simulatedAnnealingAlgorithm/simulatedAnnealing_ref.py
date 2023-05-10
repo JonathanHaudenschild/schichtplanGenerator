@@ -305,7 +305,7 @@ num_of_shifts_per_person = 5  # number of shifts per person
 num_of_shift_types = len(shift_name_list)
 
 initial_temperature = 1000
-cooling_rate = 0.9999
+cooling_rate = 0.99997
 s_print_lock = Lock()
 
 def generate_initial_solution(x, y):
